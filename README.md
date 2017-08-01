@@ -1,5 +1,4 @@
-#
-Automated MRI Segmentation and Analysis Framework \(AMSAF\)
+# Automated MRI Segmentation and Analysis Framework \(AMSAF\)
 
 ---
 
