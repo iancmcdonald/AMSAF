@@ -9,6 +9,7 @@ def get_transform_parameter_map(fixed_image, moving_image, parameter_map):
     elastixImageFilter.SetFixedImage(fixed_image)
     elastixImageFilter.SetMovingImage(moving_image)
     elastixImageFilter.SetParameterMap(parameter_map)
+
     elastixImageFilter.Execute()
 
     return elastixImageFilter.GetTransformParameterMap()
@@ -31,7 +32,8 @@ def subtraction_evaluator(ground_truth, seg):
             groundtruth:
         Returns: (SimpleITK.SimpleITK.Image) of the automated segmentation subtracted with the ground truth seg
         """
-        subtractedImage = ground_truth - seg
+        seg_casted = sitk.Cast(seg, ground_truth.GetPixelID())
+        subtractedImage = ground_truth - seg_casted
         return subtractedImage
 
     def count_zeros(img):
@@ -51,7 +53,7 @@ def generate_parameter_map():
     # elastix_params = {}  # parameters go here
     # param_grid = ParameterGrid(elastix_params)
     translation_map = sitk.GetDefaultParameterMap('translation')
-    translation_map["AutomaticParameterEstimation"] = ["true"]
+    translation_map['AutomaticTransformInitialization'] = ['true']
     param_grid = [translation_map]
 
     for param_map in param_grid:
@@ -63,8 +65,11 @@ def optimize_parameter_map(ref_image_ground_truth_crop, ref_seg_ground_truth_cro
     def get_seg_score_and_transform_parameter_map(parameter_map):
         transform_parameter_map = get_transform_parameter_map(target_image_ground_truth_crop,
                                                               ref_image_ground_truth_crop, parameter_map)
+        print("registration finished")
 
         result_seg = apply_transformation(ref_seg_ground_truth_crop, transform_parameter_map)
+
+        print("transformation applied")
 
         seg_score = subtraction_evaluator(target_seg_ground_truth_crop, result_seg)
 
