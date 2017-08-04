@@ -50,7 +50,9 @@ def subtraction_evaluator(ground_truth, seg):
 def generate_parameter_map():
     # elastix_params = {}  # parameters go here
     # param_grid = ParameterGrid(elastix_params)
-    param_grid = [sitk.GetDefaultParameterMap('translation')]
+    translation_map = sitk.GetDefaultParameterMap('translation')
+    translation_map["AutomaticParameterEstimation"] = ["true"]
+    param_grid = [translation_map]
 
     for param_map in param_grid:
         yield param_map
