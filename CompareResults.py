@@ -6,6 +6,7 @@ class CompareResults:
         self.database = PriorityQueue()  # creates a new queue to store results
 
     def AddItem(self, parammap, priority):
+        # TODO(Daniel): Figure out priorities, bc in SubtractEval lower is better but others higher is better
         """ adds new parameter map to database
 
         Args:
