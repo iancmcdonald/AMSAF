@@ -72,4 +72,4 @@ def optimize_parameter_map(ref_image_ground_truth_crop, ref_seg_ground_truth_cro
     best_parameter_map = max(imap(get_seg_score_and_transform_parameter_map, generate_parameter_map()),
                              key=lambda pair: pair[0])
 
-    print(best_parameter_map)
+    return best_parameter_map
