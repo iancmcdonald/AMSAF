@@ -46,7 +46,10 @@ def subtraction_evaluator(ground_truth, seg):
         statFilter.Execute(img == 0)
         return statFilter.GetSum()
 
-    return count_zeros(subtract_images())
+    # return count_zeros(subtract_images())
+    overlapFilter = sitk.LabelOverlapMeasuresImageFilter()
+    overlapFilter.Execute(ground_truth, seg)
+    return overlapFilter.GetDiceCoefficient()
 
 
 def generate_parameter_map():
