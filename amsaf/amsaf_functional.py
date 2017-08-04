@@ -16,6 +16,8 @@ def get_transform_parameter_map(fixed_image, moving_image, parameter_map):
 
 
 def apply_transformation(moving_image, transform_parameter_map):
+    transform_parameter_map = transform_parameter_map[0]
+    transform_parameter_map['ResampleInterpolator'] = ['FinalNearestNeighborInterpolator']
     transformixImageFilter = sitk.TransformixImageFilter()
     transformixImageFilter.SetMovingImage(moving_image)
     transformixImageFilter.SetTransformParameterMap(transform_parameter_map)
@@ -48,14 +50,15 @@ def subtraction_evaluator(ground_truth, seg):
 
     # return count_zeros(subtract_images())
     overlapFilter = sitk.LabelOverlapMeasuresImageFilter()
-    overlapFilter.Execute(ground_truth, seg)
+    seg_casted = sitk.Cast(seg, ground_truth.GetPixelID())
+    overlapFilter.Execute(ground_truth, seg_casted)
     return overlapFilter.GetDiceCoefficient()
 
 
 def generate_parameter_map():
     # elastix_params = {}  # parameters go here
     # param_grid = ParameterGrid(elastix_params)
-    translation_map = sitk.GetDefaultParameterMap('translation')
+    translation_map = sitk.GetDefaultParameterMap('rigid')
     translation_map['AutomaticTransformInitialization'] = ['true']
     param_grid = [translation_map]
 
@@ -73,6 +76,9 @@ def optimize_parameter_map(ref_image_ground_truth_crop, ref_seg_ground_truth_cro
         result_seg = apply_transformation(ref_seg_ground_truth_crop, transform_parameter_map)
 
         print("transformation applied")
+
+        sitk.WriteImage(target_seg_ground_truth_crop, "target_ground_truth_seg.nii")
+        sitk.WriteImage(result_seg, "result_seg.nii")
 
         seg_score = subtraction_evaluator(target_seg_ground_truth_crop, result_seg)
 
