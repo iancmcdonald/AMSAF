@@ -34,7 +34,7 @@ def subtraction_evaluator(ground_truth, seg):
         return subtractedImage
 
     def count_zeros(img):
-        """Adding up the number of nonzero values resulting from subtracting segmentation images
+        """Adding up the number of zero values resulting from subtracting segmentation images
         Args:
             img (SimpleITK.SimpleITK.Image): subtracted segmentation image
         Returns: Integer
