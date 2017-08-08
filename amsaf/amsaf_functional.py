@@ -1,9 +1,8 @@
 from itertools import imap
+from itertools import islice
 
 import SimpleITK as sitk
 from sklearn.model_selection import ParameterGrid
-import numpy as np
-from scipy.spatial.distance import dice
 
 
 def get_transform_parameter_map(fixed_image, moving_image, parameter_map):
@@ -103,7 +102,7 @@ def generate_parameter_maps(priors=None):
 
     def convert_to_elastix(param_dict):
         # type: (dict) -> sitk.ParameterMap
-        elastix_param_map = sitk.ParameterMap()
+        elastix_param_map = sitk.GetDefaultParameterMap('rigid')
         for param, val in param_dict.iteritems():
             elastix_param_map[param] = [val]
 
@@ -111,14 +110,8 @@ def generate_parameter_maps(priors=None):
 
     param_grid = ParameterGrid(get_parameter_options_dict('rigid'))
 
-    # for testing
-    # default_map = sitk.GetDefaultParameterMap('rigid')
-    # default_map['AutomaticTransformInitialization'] = ['true']
-    # param_grid = [default_map]
-
     for param_map in param_grid:
         yield convert_to_elastix(param_map)
-        # yield param_map
 
 
 def optimize_parameter_map(ref_image_ground_truth_crop, ref_seg_ground_truth_crop, target_image_ground_truth_crop,
@@ -137,10 +130,11 @@ def optimize_parameter_map(ref_image_ground_truth_crop, ref_seg_ground_truth_cro
 
         seg_score = dice_evaluator(target_seg_ground_truth_crop, processed_result_seg)
 
-        return seg_score, transform_parameter_map
+        return seg_score, parameter_map
 
     # TODO(Ian): Replace imap with numap or Multiprocess imap
-    best_parameter_map = max(imap(get_seg_score_and_transform_parameter_map, generate_parameter_maps()),
+
+    best_parameter_map = max(imap(get_seg_score_and_transform_parameter_map, islice(generate_parameter_maps(), 3)),
                              key=lambda pair: pair[0])
 
     return best_parameter_map
