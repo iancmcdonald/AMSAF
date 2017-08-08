@@ -54,6 +54,9 @@ class TestAmsafFunctional(unittest.TestCase):
         self.assertEqual(self_sub, sub3_forearm_muscles_ground_truth.GetNumberOfPixels())
         self.assertTrue(sub_score)
 
+    def test_generate_parameter_maps(self):
+        self.assertTrue(True)
+
 
 if __name__ == '__main__':
     unittest.main()

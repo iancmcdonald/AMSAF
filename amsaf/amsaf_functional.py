@@ -68,6 +68,18 @@ def dice_evaluator(ground_truth, seg):
 
 
 def generate_parameter_maps(priors):
+    def get_parameter_options_dict(transform):
+        if transform == 'rigid':
+            param_grid = {
+                'AutomaticParameterEstimation': ['true'],
+                'AutomaticTransformInitialization': ['true'],
+                'CheckNumberOfSamples': ['true'],
+                'DefaultPixelValue': ['0'],
+                'FinalBSplineInterpolationOrder': ['3'],
+                'FixedImagePyramid': ['FixedSmoothingImagePyramid', 'FixedRecursiveImagePyramid'],
+
+            }
+
     def convert_to_elastix(params):
         pass
 
