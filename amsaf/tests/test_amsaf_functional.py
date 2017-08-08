@@ -1,25 +1,49 @@
 import unittest
+
 from amsaf.amsaf_functional import *
 
-PQ_forearm_img_cropped = sitk.ReadImage(
-    "/srv/hart_mri/mri_data/PQ_Full/crops/forearm/PQ_forearm_cropped_for_ITK-SNAP_biascorr.nii")
+from test_data.mr_images import PQ_forearm_img_cropped
+from test_data.mr_images import sub3_forearm_img_cropped
 
-PQ_forearm_muscles = sitk.ReadImage("/srv/hart_mri/mri_data/PQ_Full/crops/forearm/PQ_forearm_cropped_muscles.nii")
+from test_data.segmentations import PQ_forearm_muscles
+from test_data.segmentations import sub3_forearm_muscles_ground_truth
 
-sub3_forearm_img_cropped = sitk.ReadImage(
-    "/srv/hart_mri/mri_data/SUBJECT_3/2-forearm/crops/sub3_forearm_cropped_for_ITK-SNAP.nii")
 
-sub3_forearm_muscles_ground_truth = sitk.ReadImage(
-    "/srv/hart_mri/mri_data/SUBJECT_3/2-forearm/crops/sub3_forearm_cropped_ground_truth_muscles.nii")
+def setup():
+    parameter_map = sitk.GetDefaultParameterMap('rigid')
+    parameter_map['AutomaticTransformInitialization'] = ['true']
+    transform_parameter_map_rigid = get_transform_parameter_map(sub3_forearm_img_cropped, PQ_forearm_img_cropped,
+                                                                parameter_map)
+    result_image = apply_transformation(PQ_forearm_muscles, transform_parameter_map_rigid)
+
+    result_image = sitk.Cast(result_image, sub3_forearm_muscles_ground_truth.GetPixelID())
+    sub3_forearm_muscles_ground_truth.CopyInformation(result_image)
+
+    return transform_parameter_map_rigid, result_image
 
 
 class TestAmsafFunctional(unittest.TestCase):
     def test_get_transform_parameter_map(self):
         parameter_map = sitk.GetDefaultParameterMap('rigid')
         parameter_map['AutomaticTransformInitialization'] = ['true']
-        get_transform_parameter_map(sub3_forearm_img_cropped, PQ_forearm_img_cropped, parameter_map)
+        transform_parameter_map = get_transform_parameter_map(sub3_forearm_img_cropped, PQ_forearm_img_cropped,
+                                                              parameter_map)
+        self.assertTrue(transform_parameter_map, sitk.PrintParameterMap(transform_parameter_map))
 
-        self.assertEqual(True, False)
+    def test_apply_transformation(self):
+        transform_parameter_map = setup()[0]
+        result_image = apply_transformation(PQ_forearm_muscles, transform_parameter_map)
+        self.assertEqual(sub3_forearm_img_cropped.GetSize(), result_image.GetSize())
+
+    def test_dice_evaluator(self):
+        seg_result = setup()[1]
+        dice_score = dice_evaluator(sub3_forearm_muscles_ground_truth, seg_result)
+        self.assertTrue(dice_score)
+
+    def test_subtraction_evaluator(self):
+        seg_result = setup()[1]
+        sub_score = subtraction_evaluator(sub3_forearm_muscles_ground_truth, seg_result)
+        self.assertTrue(sub_score)
 
 
 if __name__ == '__main__':

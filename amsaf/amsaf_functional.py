@@ -16,8 +16,17 @@ def get_transform_parameter_map(fixed_image, moving_image, parameter_map):
 
 
 def apply_transformation(moving_image, transform_parameter_map):
-    transform_parameter_map = transform_parameter_map[0]
-    transform_parameter_map['ResampleInterpolator'] = ['FinalNearestNeighborInterpolator']
+    """
+
+    Args:
+        moving_image:
+        transform_parameter_map:
+
+    Returns: SimpleITK.SimpleITK.Image
+
+    """
+    transform_parameter_map_vec = transform_parameter_map[0]
+    transform_parameter_map_vec['ResampleInterpolator'] = ['FinalNearestNeighborInterpolator']
     transformixImageFilter = sitk.TransformixImageFilter()
     transformixImageFilter.SetMovingImage(moving_image)
     transformixImageFilter.SetTransformParameterMap(transform_parameter_map)
@@ -34,8 +43,7 @@ def subtraction_evaluator(ground_truth, seg):
             groundtruth:
         Returns: (SimpleITK.SimpleITK.Image) of the automated segmentation subtracted with the ground truth seg
         """
-        seg_casted = sitk.Cast(seg, ground_truth.GetPixelID())
-        subtractedImage = ground_truth - seg_casted
+        subtractedImage = ground_truth - seg
         return subtractedImage
 
     def count_zeros(img):
@@ -48,10 +56,12 @@ def subtraction_evaluator(ground_truth, seg):
         statFilter.Execute(img == 0)
         return statFilter.GetSum()
 
-    # return count_zeros(subtract_images())
+    return count_zeros(subtract_images())
+
+
+def dice_evaluator(ground_truth, seg):
     overlapFilter = sitk.LabelOverlapMeasuresImageFilter()
-    seg_casted = sitk.Cast(seg, ground_truth.GetPixelID())
-    overlapFilter.Execute(ground_truth, seg_casted)
+    overlapFilter.Execute(ground_truth, seg)
     return overlapFilter.GetDiceCoefficient()
 
 
@@ -68,19 +78,19 @@ def generate_parameter_map():
 
 def optimize_parameter_map(ref_image_ground_truth_crop, ref_seg_ground_truth_crop, target_image_ground_truth_crop,
                            target_seg_ground_truth_crop, parameter_priors):
+    def process_seg_result(ground_truth, seg):
+        processed_seg = sitk.Cast(seg, ground_truth.GetPixelID())
+        ground_truth.CopyInformation(processed_seg)
+        return processed_seg
+
     def get_seg_score_and_transform_parameter_map(parameter_map):
         transform_parameter_map = get_transform_parameter_map(target_image_ground_truth_crop,
                                                               ref_image_ground_truth_crop, parameter_map)
-        print("registration finished")
-
         result_seg = apply_transformation(ref_seg_ground_truth_crop, transform_parameter_map)
 
-        print("transformation applied")
+        processed_result_seg = process_seg_result(target_seg_ground_truth_crop, result_seg)
 
-        sitk.WriteImage(target_seg_ground_truth_crop, "target_ground_truth_seg.nii")
-        sitk.WriteImage(result_seg, "result_seg.nii")
-
-        seg_score = subtraction_evaluator(target_seg_ground_truth_crop, result_seg)
+        seg_score = subtraction_evaluator(target_seg_ground_truth_crop, processed_result_seg)
 
         return seg_score, transform_parameter_map
 
