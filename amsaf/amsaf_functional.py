@@ -2,6 +2,8 @@ from itertools import imap
 
 import SimpleITK as sitk
 from sklearn.model_selection import ParameterGrid
+import numpy as np
+from scipy.spatial.distance import dice
 
 
 def get_transform_parameter_map(fixed_image, moving_image, parameter_map):
@@ -65,7 +67,10 @@ def dice_evaluator(ground_truth, seg):
     return overlapFilter.GetDiceCoefficient()
 
 
-def generate_parameter_map():
+def generate_parameter_maps(priors):
+    def convert_to_elastix(params):
+        pass
+
     # elastix_params = {}  # parameters go here
     # param_grid = ParameterGrid(elastix_params)
     translation_map = sitk.GetDefaultParameterMap('rigid')
@@ -90,12 +95,12 @@ def optimize_parameter_map(ref_image_ground_truth_crop, ref_seg_ground_truth_cro
 
         processed_result_seg = process_seg_result(target_seg_ground_truth_crop, result_seg)
 
-        seg_score = subtraction_evaluator(target_seg_ground_truth_crop, processed_result_seg)
+        seg_score = dice_evaluator(target_seg_ground_truth_crop, processed_result_seg)
 
         return seg_score, transform_parameter_map
 
     # TODO(Ian): Replace imap with numap or Multiprocess imap
-    best_parameter_map = max(imap(get_seg_score_and_transform_parameter_map, generate_parameter_map()),
+    best_parameter_map = max(imap(get_seg_score_and_transform_parameter_map, generate_parameter_maps(parameter_priors)),
                              key=lambda pair: pair[0])
 
     return best_parameter_map

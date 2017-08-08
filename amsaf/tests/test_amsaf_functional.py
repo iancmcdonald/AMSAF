@@ -33,16 +33,25 @@ class TestAmsafFunctional(unittest.TestCase):
     def test_apply_transformation(self):
         transform_parameter_map = setup()[0]
         result_image = apply_transformation(PQ_forearm_muscles, transform_parameter_map)
+
         self.assertEqual(sub3_forearm_img_cropped.GetSize(), result_image.GetSize())
 
     def test_dice_evaluator(self):
         seg_result = setup()[1]
+
+        self_dice = dice_evaluator(sub3_forearm_muscles_ground_truth, sub3_forearm_muscles_ground_truth)
         dice_score = dice_evaluator(sub3_forearm_muscles_ground_truth, seg_result)
+
+        self.assertEqual(self_dice, 1)
         self.assertTrue(dice_score)
 
     def test_subtraction_evaluator(self):
         seg_result = setup()[1]
+
+        self_sub = subtraction_evaluator(sub3_forearm_muscles_ground_truth, sub3_forearm_muscles_ground_truth)
         sub_score = subtraction_evaluator(sub3_forearm_muscles_ground_truth, seg_result)
+
+        self.assertEqual(self_sub, sub3_forearm_muscles_ground_truth.GetNumberOfPixels())
         self.assertTrue(sub_score)
 
 
