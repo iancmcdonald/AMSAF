@@ -1,9 +1,8 @@
 from itertools import imap
+from itertools import islice
 
 import SimpleITK as sitk
 from sklearn.model_selection import ParameterGrid
-import numpy as np
-from scipy.spatial.distance import dice
 
 
 def get_transform_parameter_map(fixed_image, moving_image, parameter_map):
@@ -67,7 +66,8 @@ def dice_evaluator(ground_truth, seg):
     return overlapFilter.GetDiceCoefficient()
 
 
-def generate_parameter_maps(priors):
+def generate_parameter_maps(priors=None):
+    # priors is a list of tuples [()]
     def get_parameter_options_dict(transform):
         if transform == 'rigid':
             param_grid = {
@@ -94,21 +94,25 @@ def generate_parameter_maps(priors):
                 'ResampleInterpolator': ['FinalBSplineInterpolator']
             }
 
-    def convert_to_elastix(params):
-        pass
+            if priors:
+                for key, val in priors:
+                    param_grid[key] = [val]
 
-    # elastix_params = {}  # parameters go here
-    # param_grid = ParameterGrid(elastix_params)
-    translation_map = sitk.GetDefaultParameterMap('rigid')
-    translation_map['AutomaticTransformInitialization'] = ['true']
-    param_grid = [translation_map]
+            return param_grid
+
+    def convert_to_elastix(param_dict):
+        # type: (dict) -> sitk.ParameterMap
+        elastix_param_map = sitk.GetDefaultParameterMap('rigid')
+        for param, val in param_dict.iteritems():
+            elastix_param_map[param] = [val]
+
+        return elastix_param_map
+
+    param_grid = ParameterGrid(get_parameter_options_dict('rigid'))
 
     for param_map in param_grid:
-        yield param_map
 
-
-def optimize_parameter_map(ref_image_ground_truth_crop, ref_seg_ground_truth_crop, target_image_ground_truth_crop,
-                           target_seg_ground_truth_crop, parameter_priors):
+                           target_seg_ground_truth_crop, parameter_priors=None):
     def process_seg_result(ground_truth, seg):
         processed_seg = sitk.Cast(seg, ground_truth.GetPixelID())
         ground_truth.CopyInformation(processed_seg)
@@ -123,10 +127,11 @@ def optimize_parameter_map(ref_image_ground_truth_crop, ref_seg_ground_truth_cro
 
         seg_score = dice_evaluator(target_seg_ground_truth_crop, processed_result_seg)
 
-        return seg_score, transform_parameter_map
+        return seg_score, parameter_map
 
     # TODO(Ian): Replace imap with numap or Multiprocess imap
-    best_parameter_map = max(imap(get_seg_score_and_transform_parameter_map, generate_parameter_maps(parameter_priors)),
+
+    best_parameter_map = max(imap(get_seg_score_and_transform_parameter_map, islice(generate_parameter_maps(), 3)),
                              key=lambda pair: pair[0])
 
     return best_parameter_map
