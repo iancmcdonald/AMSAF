@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="5105d35c-44fd-4fd2-93a2-66adcda89100" name="AWS hart server" url="http://54.153.82.127">
+        <fileTransfer host="54.153.82.127" port="22" rootFolder="/home/daniel" accessType="SFTP">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" />
+          </advancedOptions>
+          <option name="port" value="22" />
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

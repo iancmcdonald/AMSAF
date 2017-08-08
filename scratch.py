@@ -20,15 +20,7 @@ sub3_forearm_img_cropped = sitk.ReadImage(
 sub3_forearm_muscles_ground_truth = sitk.ReadImage(
     "/srv/hart_mri/mri_data/SUBJECT_3/2-forearm/crops/sub3_forearm_cropped_ground_truth_muscles.nii")
 
-
-# def generate_parameter_map():
-#     # TODO(Ian): Use grid search or some other means to generate parameter map. Think closures.
-#     elastix_params = {'a': [1, 2], 'b': [True, False]}  # parameters go here
-#     param_grid = ParameterGrid(elastix_params)
-
-#     for pmap in param_grid:
-#         yield pmap
-
-
-print(optimize_parameter_map(PQ_forearm_img_cropped, PQ_forearm_muscles, sub3_forearm_img_cropped,
-                             sub3_forearm_muscles_ground_truth, None))
+if __name__ == '__main__':
+    print(optimize_parameter_map(PQ_forearm_img_cropped, PQ_forearm_muscles, sub3_forearm_img_cropped,
+                                 sub3_forearm_muscles_ground_truth, None))
+    # print("hello from server!")

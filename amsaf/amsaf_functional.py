@@ -27,6 +27,7 @@ def apply_transformation(moving_image, transform_parameter_map):
 
 
 def subtraction_evaluator(ground_truth, seg):
+    # TODO: There's something wrong with the second to last line, subtaction works but Dice coefficient errors
     def subtract_images():
         """Subtracts the automated segmentation with the ground truth segmentation
         Args:

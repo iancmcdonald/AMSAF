@@ -6,12 +6,12 @@ test_img2 = "/Users/Daniel/hart_research/MRI_DATA/manual_seg/mergetest/combined_
 
 
 class SubtractorTest(unittest.TestCase):
-    # def subtract_itself(self):
-    #     # Note: Dimensions are 294 x 871 x 305
-    #     autoseg = sitk.ReadImage(test_img1)
-    #     groundtruth = sitk.ReadImage(test_img1)
-    #     expected = amsaf.amsaf_functional.subtraction_evaluator(groundtruth, autoseg)
-    #     self.assertEqual(expected, 78102570)
+    def subtract_itself(self):
+        # Note: Dimensions are 294 x 871 x 305
+        autoseg = sitk.ReadImage(test_img1)
+        groundtruth = sitk.ReadImage(test_img1)
+        expected = amsaf.amsaf_functional.subtraction_evaluator(groundtruth, autoseg)
+        self.assertEqual(expected, 78102570)
 
     def identity_test(self):
         identity = test_img1 - test_img2
