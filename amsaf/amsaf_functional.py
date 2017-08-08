@@ -38,7 +38,6 @@ def apply_transformation(moving_image, transform_parameter_map):
 
 
 def subtraction_evaluator(ground_truth, seg):
-    # TODO: There's something wrong with the second to last line, subtaction works but Dice coefficient errors
     def subtract_images():
         """Subtracts the automated segmentation with the ground truth segmentation
         Args:
@@ -69,6 +68,32 @@ def dice_evaluator(ground_truth, seg):
 
 
 def generate_parameter_maps(priors):
+    def get_parameter_options_dict(transform):
+        if transform == 'rigid':
+            param_grid = {
+                'AutomaticParameterEstimation': ['true'],
+                'AutomaticTransformInitialization': ['true'],
+                'AutomaticTransformInitializationMethod': ['CenterOfGravity', 'Origins', 'GeometricalCenter',
+                                                           'GeometryTop'],
+                'BSplineInterpolationOrder': ['1', '3'],
+                'CheckNumberOfSamples': ['true'],
+                'DefaultPixelValue': ['0'],
+                'FinalBSplineInterpolationOrder': ['3'],
+                'FixedImagePyramid': ['FixedSmoothingImagePyramid', 'FixedRecursiveImagePyramid'],
+                'ImagePyramidSchedule': ['2 2 1', '4 4 1  2 2 1  1 1 1', '32 32 2  16 16 2',
+                                         '16 16 2  8 8 1  4 4 1  2 2 1  1 1 1'],
+                'Interpolator': ['BSplineInterpolator'],
+                'MaximumNumberOfIterations': ['512', '1024', '2048'],
+                'Metric': ['AdvancedMattesMutualInformation', 'AdvancedNormalizedCorrelation',
+                           'NormalizedMutualInformation'],
+                'NumberOfHistogramBins': ['32', '64', '128', '16 32 64', '64 32 16'],
+                'NumberOfResolutions': ['1', '2', '3', '6'],
+                'NumberOfSpatialSamples': ['2000', '4000', '8000'],
+                'Registration': ['MultiResolutionRegistration'],
+                'Resampler': ['DefaultResampler'],
+                'ResampleInterpolator': ['FinalBSplineInterpolator']
+            }
+
     def convert_to_elastix(params):
         pass
 
