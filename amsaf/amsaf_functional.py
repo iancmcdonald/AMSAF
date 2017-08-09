@@ -6,32 +6,35 @@ import SimpleITK as sitk
 from sklearn.model_selection import ParameterGrid
 
 
-def get_transform_parameter_map(fixed_image, moving_image, parameter_map):
+def get_transform_parameter_map(fixed_image, moving_image, parameter_maps):
     elastixImageFilter = sitk.ElastixImageFilter()
     elastixImageFilter.SetFixedImage(fixed_image)
     elastixImageFilter.SetMovingImage(moving_image)
-    elastixImageFilter.SetParameterMap(parameter_map)
+    elastixImageFilter.SetParameterMap(parameter_maps[0])
+    elastixImageFilter.AddParameterMap(parameter_maps[1])
+    elastixImageFilter.AddParameterMap(parameter_maps[2])
 
     elastixImageFilter.Execute()
 
     return elastixImageFilter.GetTransformParameterMap()
 
 
-def apply_transformation(moving_image, transform_parameter_map):
+def apply_transformation(moving_image, transform_parameter_map_vec):
     """
 
     Args:
         moving_image:
-        transform_parameter_map:
+        transform_parameter_map_vec:
 
     Returns: SimpleITK.SimpleITK.Image
 
     """
-    transform_parameter_map_vec = transform_parameter_map[0]
-    transform_parameter_map_vec['ResampleInterpolator'] = ['FinalNearestNeighborInterpolator']
+    for t_map in transform_parameter_map_vec:
+        t_map['ResampleInterpolator'] = ['FinalNearestNeighborInterpolator']
+
     transformixImageFilter = sitk.TransformixImageFilter()
+    transformixImageFilter.SetTransformParameterMap(transform_parameter_map_vec)
     transformixImageFilter.SetMovingImage(moving_image)
-    transformixImageFilter.SetTransformParameterMap(transform_parameter_map)
     transformixImageFilter.Execute()
 
     return transformixImageFilter.GetResultImage()
@@ -73,51 +76,73 @@ def get_parameter_options_dict(transform, priors=None):
         param_grid = {
             'AutomaticParameterEstimation': ['true'],
             'AutomaticTransformInitialization': ['true'],
-            'AutomaticTransformInitializationMethod': ['CenterOfGravity', 'Origins', 'GeometricalCenter',
-                                                       'GeometryTop'],
             'BSplineInterpolationOrder': ['1', '3'],
             'CheckNumberOfSamples': ['true'],
             'DefaultPixelValue': ['0'],
             'FinalBSplineInterpolationOrder': ['3'],
             'FixedImagePyramid': ['FixedSmoothingImagePyramid', 'FixedRecursiveImagePyramid'],
-            'ImagePyramidSchedule': ['2 2 1', '4 4 1  2 2 1  1 1 1', '32 32 2  16 16 2',
-                                     '16 16 2  8 8 1  4 4 1  2 2 1  1 1 1'],
             'Interpolator': ['BSplineInterpolator'],
-            'MaximumNumberOfIterations': ['512', '1024', '2048'],
+            'MaximumNumberOfIterations': ['512' '1024' '2048'],
             'Metric': ['AdvancedMattesMutualInformation', 'AdvancedNormalizedCorrelation',
                        'NormalizedMutualInformation'],
-            'NumberOfHistogramBins': ['32', '64', '128', '16 32 64', '64 32 16'],
-            'NumberOfResolutions': ['1', '2', '3', '6'],
-            'NumberOfSpatialSamples': ['2000', '4000', '8000'],
+            'NumberOfHistogramBins': ['32', '64'],
+            'NumberOfResolutions': ['3', '6'],
+            'NumberOfSpatialSamples': ['2000'],
             'Registration': ['MultiResolutionRegistration'],
             'Resampler': ['DefaultResampler'],
             'ResampleInterpolator': ['FinalBSplineInterpolator']
         }
+    elif transform == 'affine':
+        param_grid = {
+            'MaximumNumberOfIterations': ['512', '1024', '2048'],
+            'Interpolator': ['LinearInterpolator', 'BSplineInterpolator'],
+            'NumberOfHistogramBins': ['32', '64']
+        }
+    elif transform == 'bspline':
+        param_grid = {
+            'AutomaticParameterEstimation': ['true'],
+            'FinalGridSpacingInPhysicalUnits': ['2', '4', '8'],
+            'MaximumNumberofIterations': ['512', '1024', '2048'],
+            'NumberOfHistogramBins': ['32', '64']
+        }
+    else:
+        raise ValueError
 
-        if priors:
-            for key, val in priors:
-                param_grid[key] = [val]
+    if priors and param_grid:
+        for key, val in priors:
+            param_grid[key] = [val]
 
-        return param_grid
+    return param_grid
 
 
-def convert_to_elastix(param_dict):
-    # type: (dict) -> sitk.ParameterMap
-    elastix_param_map = sitk.GetDefaultParameterMap('rigid')
-    for param, val in param_dict.iteritems():
-        elastix_param_map[param] = [val]
+def convert_to_elastix(rigid_param_dict, affine_param_dict, bspline_param_dict):
+    # type: (dict) -> [sitk.ParameterMap]
 
-    return elastix_param_map
+    def edit_map(param_dict, param_map):
+        for param, val in param_dict.iteritems():
+            param_map[param] = [val]
+        return param_map
+
+    rigid_param_map = edit_map(rigid_param_dict, sitk.GetDefaultParameterMap('rigid'))
+    affine_param_map = edit_map(affine_param_dict, sitk.GetDefaultParameterMap('affine'))
+    bspline_param_map = edit_map(bspline_param_dict, sitk.GetDefaultParameterMap('bspline'))
+
+    return [rigid_param_map, affine_param_map, bspline_param_map]
 
 
 def generate_parameter_maps(ref_image_ground_truth_crop, ref_seg_ground_truth_crop,
                             target_image_ground_truth_crop,
                             target_seg_ground_truth_crop):
-    param_grid = ParameterGrid(get_parameter_options_dict('rigid'))
+    rigid_param_grid = ParameterGrid(get_parameter_options_dict('rigid'))
+    affine_param_grid = ParameterGrid(get_parameter_options_dict('affine'))
+    bspline_param_grid = ParameterGrid(get_parameter_options_dict('bspline'))
 
-    for param_map in param_grid:
-        yield ref_image_ground_truth_crop, ref_seg_ground_truth_crop, target_image_ground_truth_crop, \
-              target_seg_ground_truth_crop, convert_to_elastix(param_map)
+    for bspline_param_map in bspline_param_grid:
+        for affine_param_map in affine_param_grid:
+            for rigid_param_map in rigid_param_grid:
+                yield ref_image_ground_truth_crop, ref_seg_ground_truth_crop, target_image_ground_truth_crop, \
+                      target_seg_ground_truth_crop, convert_to_elastix(rigid_param_map, affine_param_map,
+                                                                       bspline_param_map)
 
 
 def process_seg_result(ground_truth, seg):
@@ -128,10 +153,10 @@ def process_seg_result(ground_truth, seg):
 
 def get_seg_score_and_transform_parameter_map(params):
     ref_image_ground_truth_crop, ref_seg_ground_truth_crop, target_image_ground_truth_crop, \
-        target_seg_ground_truth_crop, parameter_map = params
+    target_seg_ground_truth_crop, parameter_maps = params
 
     transform_parameter_map = get_transform_parameter_map(target_image_ground_truth_crop,
-                                                          ref_image_ground_truth_crop, parameter_map)
+                                                          ref_image_ground_truth_crop, parameter_maps)
 
     result_seg = apply_transformation(ref_seg_ground_truth_crop, transform_parameter_map)
 
@@ -139,21 +164,19 @@ def get_seg_score_and_transform_parameter_map(params):
 
     seg_score = dice_evaluator(target_seg_ground_truth_crop, processed_result_seg)
 
-    return seg_score, parameter_map
+    return seg_score, parameter_maps
 
 
 def optimize_parameter_map(ref_image_ground_truth_crop, ref_seg_ground_truth_crop, target_image_ground_truth_crop,
                            target_seg_ground_truth_crop, parameter_priors=None):
     # TODO(Ian): Replace imap with numap or Multiprocess imap
 
-    # ref_image_gt_arr = sitk.GetArrayFromImage(ref_image_ground_truth_crop)
-    # ref_seg_gt_arr = sitk.GetArrayFromImage(ref_seg_ground_truth_crop)
-    # targ_image_gt_arr = sitk.GetArrayFromImage(target_image_ground_truth_crop)
-    # targ_seg_gt_arr = sitk.GetArrayFromImage(target_seg_ground_truth_crop)
+    seg_score, best_parameter_maps = max(imap(get_seg_score_and_transform_parameter_map,
+                                              generate_parameter_maps(ref_image_ground_truth_crop,
+                                                                      ref_seg_ground_truth_crop,
+                                                                      target_image_ground_truth_crop,
+                                                                      target_seg_ground_truth_crop)),
+                                         key=lambda pair: pair[0])
 
-    best_parameter_map = max(imap(get_seg_score_and_transform_parameter_map, islice(
-        generate_parameter_maps(ref_image_ground_truth_crop, ref_seg_ground_truth_crop, target_image_ground_truth_crop,
-                                target_seg_ground_truth_crop), 5)),
-                             key=lambda pair: pair[0])
-
-    return best_parameter_map
+    sitk.WriteParameterFile(best_parameter_maps, 'best_parameter_map.txt')
+    return seg_score, best_parameter_maps
