@@ -14,10 +14,15 @@ sub3_forearm_muscles_ground_truth = sitk.ReadImage(
     "/srv/hart_mri/mri_data/SUBJECT_3/2-forearm/crops/sub3_forearm_cropped_ground_truth_muscles.nii")
 
 if __name__ == '__main__':
-    score, best_maps = optimize_parameter_map(PQ_forearm_img_cropped, PQ_forearm_muscles, sub3_forearm_img_cropped,
+<<<<<<< HEAD
+    print(optimize_parameter_map(PQ_forearm_img_cropped, PQ_forearm_muscles, sub3_forearm_img_cropped,
+                                 sub3_forearm_muscles_ground_truth, None))
+    # print("hello from server!")
+=======
+    score, best_map = optimize_parameter_map(PQ_forearm_img_cropped, PQ_forearm_muscles, sub3_forearm_img_cropped,
                                  sub3_forearm_muscles_ground_truth, None)
 
-    for bm in best_maps:
-        sitk.PrintParameterMap(bm)
-
+    sitk.PrintParameterMap(best_map)
     print("score: " + str(score))
+    # print("hello from server")
+>>>>>>> f694151a691bfffa4b8b543e8033da6ec100441f
