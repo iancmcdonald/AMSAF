@@ -1,6 +1,4 @@
 from itertools import imap
-from itertools import islice
-from multiprocessing import Pool
 
 import SimpleITK as sitk
 from sklearn.model_selection import ParameterGrid
