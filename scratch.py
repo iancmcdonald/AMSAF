@@ -1,6 +1,5 @@
 import SimpleITK as sitk
-
-from amsaf.amsaf_functional import optimize_parameter_map
+from amsaf.AmsafExecutor import AmsafExecutor
 
 PQ_forearm_img_cropped = sitk.ReadImage(
     "/srv/hart_mri/mri_data/PQ_Full/crops/forearm/PQ_forearm_cropped_for_ITK-SNAP_biascorr.nii")
@@ -14,10 +13,18 @@ sub3_forearm_muscles_ground_truth = sitk.ReadImage(
     "/srv/hart_mri/mri_data/SUBJECT_3/2-forearm/crops/sub3_forearm_cropped_ground_truth_muscles.nii")
 
 if __name__ == '__main__':
-    score, best_maps = optimize_parameter_map(PQ_forearm_img_cropped, PQ_forearm_muscles, sub3_forearm_img_cropped,
-                                 sub3_forearm_muscles_ground_truth, None)
+    amsafExecutor = AmsafExecutor()
+    amsafExecutor.targetGroundTruthImage = sub3_forearm_img_cropped
+    amsafExecutor.refGroundTruthImage = PQ_forearm_img_cropped
+    amsafExecutor.targetGroundTruthSeg = sub3_forearm_muscles_ground_truth
+    amsafExecutor.refGroundTruthSeg = PQ_forearm_muscles
+    amsafExecutor.execute()
 
-    for bm in best_maps:
-        sitk.PrintParameterMap(bm)
+    topTwenty = amsafExecutor.getTopNResults(20)
 
-    print("score: " + str(score))
+    for i, (pMap, segScore) in enumerate(topTwenty):
+        writeFileName = 'SegResult.' + str(i) + '.txt'
+        sitk.WriteParameterFile(pMap, writeFileName)
+        f = open(writeFileName, 'a')
+        f.write('score: ' + str(segScore) + '\n')
+        f.close()

@@ -1,18 +1,21 @@
 from itertools import imap
+import heapq
 from sklearn.model_selection import ParameterGrid
 import SimpleITK as sitk
 
+from ParameterMapService import ParameterMapService
+
 
 class AmsafExecutor(object):
-    def __init__(self):
+    def __init__(self, parameterMapServiceInjectable=ParameterMapService):
         super(AmsafExecutor, self).__init__()
         self._refGroundTruthImage = None
         self._refGroundTruthSeg = None
         self._targetGroundTruthImage = None
         self._targetGroundTruthSeg = None
         self._parameterPriors = None
-        self._parameterMaps = None
-        self._parameterMapGenerator = None
+        self._segResultsCollection = []
+        self._parameterMapService = parameterMapServiceInjectable()
 
     #######################
     # Getters and Setters #
@@ -59,33 +62,35 @@ class AmsafExecutor(object):
         self._parameterPriors = value
 
     @property
-    def parameterMaps(self):
-        return self._parameterMaps
+    def segResultsCollection(self):
+        return self._segResultsCollection
 
-    @parameterMaps.setter
-    def parameterMaps(self, value):
-        self._parameterMaps = value
+    @segResultsCollection.setter
+    def segResultsCollection(self, value):
+        self._segResultsCollection = value
 
     @property
-    def parameterMapGenerator(self):
-        return self._parameterMapGenerator
+    def parameterMapService(self):
+        return self._parameterMapService
 
-    @parameterMapGenerator.setter
-    def parameterMapGenerator(self, value):
-        self._parameterMapGenerator = value
+    @parameterMapService.setter
+    def parameterMapService(self, value):
+        self._parameterMapService = value
 
     ###########
     # Methods #
     ###########
 
-    def findTransformParameterMap(self):
-        # type: () -> sitk.ParameterMap
+    def findTransformParameterMap(self, parameterMapVec):
+        # type: ([sitk.ParameterMap]) -> sitk.ParameterMap
 
         # Initialize Elastix registration
         elastixImageFilter = sitk.ElastixImageFilter()
         elastixImageFilter.SetFixedImage(self.targetGroundTruthImage)
         elastixImageFilter.SetMovingImage(self.refGroundTruthImage)
-        elastixImageFilter.SetParameterMap(self.parameterMaps)
+        elastixImageFilter.SetParameterMap(parameterMapVec[0])
+        elastixImageFilter.AddParameterMap(parameterMapVec[1])
+        elastixImageFilter.AddParameterMap(parameterMapVec[2])
 
         # Execute Registration
         elastixImageFilter.Execute()
@@ -107,10 +112,13 @@ class AmsafExecutor(object):
         # Execute transformation
         transformixImageFilter.Execute()
 
-        # Cast voxel types
+        # Cast voxel types to make images comparable
         resultSeg = sitk.Cast(transformixImageFilter.GetResultImage(), self.refGroundTruthSeg.GetPixelID())
 
-        self.refGroundTruthSeg.CopyInformation(resultSeg)  # copy header information so images are comparable
+        # Copy header information to make images comparable
+        self.refGroundTruthSeg.CopyInformation(resultSeg)
+
+        return resultSeg
 
     def subtractionScore(self, seg):
         # type: (sitk.Image) -> float
@@ -130,7 +138,23 @@ class AmsafExecutor(object):
 
         return overlapFilter.GetDiceCoefficient()
 
+    def execute(self):
+        # type: () -> [(sitk.ParameterMap, float)]
 
+        for pMapVec in self.parameterMapService.generateParameterMaps(self.parameterPriors):
+            # Register images to find transformation parameters
+            transformParameterMapVec = self.findTransformParameterMap(pMapVec)
 
+            # Transform ref segmentation
+            resultSeg = self.findResultSeg(transformParameterMapVec)
+
+            # Quantify segmentation accurracy
+            segScore = self.subtractionScore(resultSeg)
+
+            # append registration parameters and corresponding score to a list
+            self.segResultsCollection.append((pMapVec, segScore))
+
+    def getTopNResults(self, n):
+        return heapq.nlargest(n, self.segResultsCollection, key=lambda x: x[1])  # return the n best results
 
 
