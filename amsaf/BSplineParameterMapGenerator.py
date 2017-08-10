@@ -8,6 +8,6 @@ class BSplineParameterMapGenerator(ParameterMapGenerator):
         self.paramDict = {
             'AutomaticParameterEstimation': ['true'],
             'FinalGridSpacingInPhysicalUnits': ['2', '4', '8'],
-            'MaximumNumberOfIterations': ['512', '1024', '2048'],
-            'NumberOfHistogramBins': ['32', '64']
+            'MaximumNumberOfIterations': ['1024'],
+            'NumberOfHistogramBins': ['32']
         }
