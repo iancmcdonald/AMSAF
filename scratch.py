@@ -22,9 +22,10 @@ if __name__ == '__main__':
 
     topTwenty = amsafExecutor.getTopNResults(20)
 
-    for i, (pMap, segScore) in enumerate(topTwenty):
-        writeFileName = 'SegResult.' + str(i) + '.txt'
-        sitk.WriteParameterFile(pMap, writeFileName)
-        f = open(writeFileName, 'a')
+    for i, (pMaps, segScore) in enumerate(topTwenty):
+        for transformMap, transformType in zip(pMaps, ['Rigid', 'Affine', 'Bspline']):
+            writeFileName = 'SegResult.' + transformType + '.' + str(i) + '.txt'
+            sitk.WriteParameterFile(transformMap, writeFileName)
+        f = open('ParamMapsIterScore.' + str(i) + '.txt', 'a')
         f.write('score: ' + str(segScore) + '\n')
         f.close()

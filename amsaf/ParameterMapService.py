@@ -15,7 +15,7 @@ class ParameterMapService(object):
             'FinalBSplineInterpolationOrder': ['3'],
             'FixedImagePyramid': ['FixedSmoothingImagePyramid', 'FixedRecursiveImagePyramid'],
             'Interpolator': ['BSplineInterpolator'],
-            'MaximumNumberOfIterations': ['512' '1024' '2048'],
+            'MaximumNumberOfIterations': ['512', '1024', '2048'],
             'Metric': ['AdvancedMattesMutualInformation', 'AdvancedNormalizedCorrelation',
                        'NormalizedMutualInformation'],
             'NumberOfHistogramBins': ['32', '64'],

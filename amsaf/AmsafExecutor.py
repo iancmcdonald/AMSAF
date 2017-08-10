@@ -116,7 +116,7 @@ class AmsafExecutor(object):
         resultSeg = sitk.Cast(transformixImageFilter.GetResultImage(), self.refGroundTruthSeg.GetPixelID())
 
         # Copy header information to make images comparable
-        self.refGroundTruthSeg.CopyInformation(resultSeg)
+        self.targetGroundTruthSeg.CopyInformation(resultSeg)
 
         return resultSeg
 
