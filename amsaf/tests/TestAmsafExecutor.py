@@ -1,13 +1,9 @@
 import unittest
 import SimpleITK as sitk
 
-from InjectedParameterMap import *
+from amsaf.ParameterMapService import *
 from amsaf.AmsafExecutor import *
-# from test_data.mr_images import PQ_forearm_img_cropped
-# from amsaf.tests.test_data.mr_images import sub3_forearm_img_cropped
-#
-# from amsaf.tests.test_data.segmentations import PQ_forearm_muscles
-# from amsaf.tests.test_data.segmentations import sub3_forearm_muscles_ground_truth
+
 
 PQ_forearm_img_cropped = sitk.ReadImage(
     "/srv/hart_mri/mri_data/PQ_Full/crops/forearm/PQ_forearm_cropped_for_ITK-SNAP_biascorr.nii")
@@ -26,35 +22,41 @@ sub3_autoseg = sitk.ReadImage(
 
 class MyTestCase(unittest.TestCase):
 
-    # def test_injected_param_map(self):
-    #     amsafExecutor = AmsafExecutor(InjectedParameterMap)
-    #     amsafExecutor.targetGroundTruthImage = sub3_forearm_img_cropped
-    #     amsafExecutor.refGroundTruthImage = PQ_forearm_img_cropped
-    #     amsafExecutor.targetGroundTruthSeg = sub3_forearm_muscles_ground_truth
-    #     amsafExecutor.refGroundTruthSeg = PQ_forearm_muscles
-    #     amsafExecutor.execute()
-    #
-    #     topTwo = amsafExecutor.getTopNResults(2)
-    #
-    #     for i, (pMap, segScore) in enumerate(topTwo):
-    #         writeFileName = 'SegResult.' + str(i) + '.txt'
-    #         sitk.WriteParameterFile(pMap, writeFileName)
-    #         f = open(writeFileName, 'a')
-    #         f.write('score: ' + str(segScore) + '\n')
-    #         f.close()
-    #     self.assertEqual(True, True)
+    def test_injected_param_map(self):
+        amsafExecutor = AmsafExecutor(ParameterMapService)
+        amsafExecutor.targetGroundTruthImage = sub3_forearm_img_cropped
+        amsafExecutor.refGroundTruthImage = PQ_forearm_img_cropped
+        amsafExecutor.targetGroundTruthSeg = sub3_forearm_muscles_ground_truth
+        amsafExecutor.refGroundTruthSeg = PQ_forearm_muscles
+        amsafExecutor.execute()
+
+        topTwo = amsafExecutor.getTopNResults(2)
+
+        for i, (pMap, segScore) in enumerate(topTwo):
+            writeFileName = 'SegResult.' + str(i) + '.txt'
+            sitk.WriteParameterFile(pMap, writeFileName)
+            f = open(writeFileName, 'a')
+            f.write('score: ' + str(segScore) + '\n')
+            f.close()
+        self.assertEqual(True, True)
 
     def testSubtractionScore(self):
         # subtracts the same file from each other, checks for equality
-        amsafExecutor = AmsafExecutor(InjectedParameterMap)
+        amsafExecutor = AmsafExecutor(ParameterMapService)
         amsafExecutor.targetGroundTruthSeg = PQ_forearm_muscles
         subtractScore = amsafExecutor.subtractionScore(PQ_forearm_muscles)
         self.assertEqual(subtractScore, 20580483.0)
 
     def testSubtractionScore1(self):
+        # takes an image, and subtracts a blank image from it
+        amsafExecutor = AmsafExecutor(ParameterMapService)
+        amsafExecutor.targetGroundTruthSeg = PQ_forearm_muscles
+        blankImg = sitk.Image(371, 451, 123, 3)
+        subtractScore = amsafExecutor.subtractionScore(blankImg)
+        self.assertEqual(subtractScore, 18476727.0)
 
     def testDiceScore(self):
-        amsafExecutor = AmsafExecutor(InjectedParameterMap)
+        amsafExecutor = AmsafExecutor(ParameterMapService)
         amsafExecutor.targetGroundTruthSeg = sub3_forearm_muscles_ground_truth
         dice = amsafExecutor.diceScore(sub3_forearm_muscles_ground_truth)
         self.assertEqual(dice, 1.0)
@@ -65,9 +67,6 @@ class MyTestCase(unittest.TestCase):
         diceScore2 = amsafExecutor.diceScore(autoseg)
         print(diceScore2)
 
-    # def testFindResultSeg(self):
-    #
-    # def testFindTransformParameterMap(self):
 
 
 if __name__ == '__main__':
