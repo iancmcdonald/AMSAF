@@ -116,7 +116,7 @@ class AmsafExecutor(object):
         resultSeg = sitk.Cast(transformixImageFilter.GetResultImage(), self.refGroundTruthSeg.GetPixelID())
 
         # Copy header information to make images comparable
-        self.refGroundTruthSeg.CopyInformation(resultSeg)
+        self.targetGroundTruthSeg.CopyInformation(resultSeg)
 
         return resultSeg
 
@@ -148,7 +148,7 @@ class AmsafExecutor(object):
             # Transform ref segmentation
             resultSeg = self.findResultSeg(transformParameterMapVec)
 
-            # Quantify segmentation accurracy
+            # Quantify segmentation accuracy
             segScore = self.subtractionScore(resultSeg)
 
             # append registration parameters and corresponding score to a list
