@@ -148,7 +148,7 @@ class AmsafExecutor(object):
             # Transform ref segmentation
             resultSeg = self.findResultSeg(transformParameterMapVec)
 
-            # Quantify segmentation accurracy
+            # Quantify segmentation accuracy
             segScore = self.subtractionScore(resultSeg)
 
             # append registration parameters and corresponding score to a list
