@@ -5,21 +5,24 @@ from BSplineParameterMapGenerator import BSplineParameterMapGenerator
 
 
 class ParameterMapService(object):
-    def __init__(self):
+    def __init__(self, rigidParameterMapGeneratorInjectable=RigidParameterMapGenerator,
+                 affineParameterMapGeneratorInjectable=AffineParameterMapGenerator,
+                 bSplineParameterMapGeneratorInjectable=BSplineParameterMapGenerator):
         super(ParameterMapService, self).__init__()
+        self.rigidParameterMapGenerator = rigidParameterMapGeneratorInjectable()
+        self.affineParameterMapGenerator = affineParameterMapGeneratorInjectable()
+        self.bSplineParameterMapGenerator = bSplineParameterMapGeneratorInjectable()
 
-    @staticmethod
-    def generateParameterMaps(parameterPriors):
+    def addParameterPriors(self, parameterPriors):
+        for pMapGen, prior in zip(
+                [self.rigidParameterMapGenerator, self.affineParameterMapGenerator, self.bSplineParameterMapGenerator],
+                parameterPriors):
+            pMapGen.addParameterPriors(prior)
+
+    def generateParameterMaps(self):
         # type: ([dict]) -> [sitk.ParameterMap, sitk.ParameterMap, sitk.ParameterMap]
-        rigidParameterMapGenerator = RigidParameterMapGenerator()
-        affineParameterMapGenerator = AffineParameterMapGenerator()
-        bSplineParameterMapGenerator = BSplineParameterMapGenerator()
 
-        rigidParameterMapGenerator.addParameterPriors(parameterPriors[0])
-        affineParameterMapGenerator.addParameterPriors(parameterPriors[1])
-        bSplineParameterMapGenerator.addParameterPriors(parameterPriors[2])
-
-        for rigidPM in rigidParameterMapGenerator.generateParameterMaps():
-            for affinePM in affineParameterMapGenerator.generateParameterMaps():
-                for bSplinePM in bSplineParameterMapGenerator.generateParameterMaps():
+        for rigidPM in self.rigidParameterMapGenerator.generateParameterMaps():
+            for affinePM in self.affineParameterMapGenerator.generateParameterMaps():
+                for bSplinePM in self.bSplineParameterMapGenerator.generateParameterMaps():
                     yield [rigidPM, affinePM, bSplinePM]

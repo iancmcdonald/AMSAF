@@ -7,7 +7,7 @@ class BSplineParameterMapGenerator(ParameterMapGenerator):
         self.transformType = 'bspline'
         self.paramDict = {
             'AutomaticParameterEstimation': ['true'],
-            'FinalGridSpacingInPhysicalUnits': ['2', '4', '8'],
-            'MaximumNumberOfIterations': ['512', '1024', '2048'],
-            'NumberOfHistogramBins': ['32', '64']
+            'FinalGridSpacingInPhysicalUnits': ['4', '8', '16'],
+            'MaximumNumberOfIterations': ['1024'],
+            'NumberOfHistogramBins': ['32']
         }
