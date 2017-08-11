@@ -1,6 +1,4 @@
-from itertools import imap
 import heapq
-from sklearn.model_selection import ParameterGrid
 import SimpleITK as sitk
 
 from ParameterMapService import ParameterMapService
@@ -82,10 +80,11 @@ class AmsafExecutor(object):
     ###########
 
     def findTransformParameterMap(self, parameterMapVec):
-        # type: ([sitk.ParameterMap]) -> sitk.ParameterMap
+        # type: ([sitk.ParameterMap]) -> (sitk.ParameterMap, sitk.ParameterMap, sitk.ParameterMap)
 
         # Initialize Elastix registration
         elastixImageFilter = sitk.ElastixImageFilter()
+        elastixImageFilter.LogToConsoleOff()
         elastixImageFilter.SetFixedImage(self.targetGroundTruthImage)
         elastixImageFilter.SetMovingImage(self.refGroundTruthImage)
         elastixImageFilter.SetParameterMap(parameterMapVec[0])
@@ -106,6 +105,7 @@ class AmsafExecutor(object):
 
         # Initialize Transformix
         transformixImageFilter = sitk.TransformixImageFilter()
+        transformixImageFilter.LogToConsoleOff()
         transformixImageFilter.SetMovingImage(self.refGroundTruthSeg)
         transformixImageFilter.SetTransformParameterMap(transformParameterMapVec)
 
@@ -141,20 +141,54 @@ class AmsafExecutor(object):
     def execute(self):
         # type: () -> [(sitk.ParameterMap, float)]
 
-        for pMapVec in self.parameterMapService.generateParameterMaps(self.parameterPriors):
+        if self.parameterPriors:
+            self.parameterMapService.addParameterPriors(self.parameterPriors)
+
+        i = 0
+        for pMapVec in self.parameterMapService.generateParameterMaps():
             # Register images to find transformation parameters
+
+            print("BEGIN ITERATION " + str(i))
+            print("\n")
+            print("Finding transform parameter map vector...")
             transformParameterMapVec = self.findTransformParameterMap(pMapVec)
 
+            print("Segmenting moving image...")
             # Transform ref segmentation
             resultSeg = self.findResultSeg(transformParameterMapVec)
 
+            print("Evaluating segmentation accuracy...")
             # Quantify segmentation accuracy
             segScore = self.subtractionScore(resultSeg)
 
             # append registration parameters and corresponding score to a list
             self.segResultsCollection.append((pMapVec, segScore))
 
-    def getTopNResults(self, n):
+            print("\n")
+            print("============================================")
+            print("END ITERATION " + str(i))
+            print("SEG SCORE: " + str(segScore))
+            print("============================================")
+            print("\n")
+
+            i += 1
+
+    def getTopNParameterMaps(self, n):
         return heapq.nlargest(n, self.segResultsCollection, key=lambda x: x[1])  # return the n best results
 
+    def WriteTopNParameterMaps(self, n):
+        for i, (pMapVec, segScore) in enumerate(self.getTopNParameterMaps(n)):
+            for transformMap, transformType in zip(pMapVec, ['Rigid', 'Affine', 'Bspline']):
+                writeFileName = 'SegResult.' + transformType + '.' + str(i) + '.txt'
+                sitk.WriteParameterFile(transformMap, writeFileName)
+            f = open('ParamMapsIterScore.' + str(i) + '.txt', 'a')
+            f.write('score: ' + str(segScore) + '\n')
+            f.close()
 
+    def getTopNSegmentations(self, n):
+        resultSegmentations = []
+        for pMapVec, _ in self.getTopNParameterMaps(n):
+            transformParameterMapVec = self.findTransformParameterMap(pMapVec)
+            resultSegmentations.append(self.findResultSeg(transformParameterMapVec))
+
+        return resultSegmentations

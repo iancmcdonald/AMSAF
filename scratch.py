@@ -12,6 +12,7 @@ sub3_forearm_img_cropped = sitk.ReadImage(
 sub3_forearm_muscles_ground_truth = sitk.ReadImage(
     "/srv/hart_mri/mri_data/SUBJECT_3/2-forearm/crops/sub3_forearm_cropped_ground_truth_muscles.nii")
 
+
 if __name__ == '__main__':
     amsafExecutor = AmsafExecutor()
     amsafExecutor.targetGroundTruthImage = sub3_forearm_img_cropped
@@ -20,7 +21,7 @@ if __name__ == '__main__':
     amsafExecutor.refGroundTruthSeg = PQ_forearm_muscles
     amsafExecutor.execute()
 
-    topTwenty = amsafExecutor.getTopNResults(20)
+    topTwenty = amsafExecutor.getTopNParameterMaps(20)
 
     for i, (pMaps, segScore) in enumerate(topTwenty):
         for transformMap, transformType in zip(pMaps, ['Rigid', 'Affine', 'Bspline']):
