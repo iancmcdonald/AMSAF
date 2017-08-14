@@ -1,9 +1,7 @@
 import unittest
 import SimpleITK as sitk
-from amsaf.ParameterMapService import *
 from amsaf.AmsafExecutor import AmsafExecutor
-from amsaf.tests.TestAmsafExecutorDummyFile1 import *
-
+import MockClasses
 
 PQ_forearm_img_cropped = sitk.ReadImage(
     "/srv/hart_mri/mri_data/PQ_Full/crops/forearm/PQ_forearm_cropped_for_ITK-SNAP_biascorr.nii")
@@ -40,6 +38,7 @@ class TestAmsafExecutor(unittest.TestCase):
 
     def tearDown(self):
         self.amsafExecutor = None
+        self.elastixImageFilter = None
 
     def testFindTransformParameterMap(self):
         amsafResult = self.amsafExecutor.findTransformParameterMap(
@@ -98,6 +97,29 @@ class TestAmsafExecutor(unittest.TestCase):
         amsafExecutor.refGroundTruthSeg = PQ_forearm_muscles
         amsafExecutor.execute
         self.assertTrue(True)
+
+        mockParameterMapService = MockClasses.MockParameterMapService
+
+        self.amsafExecutor = AmsafExecutor(mockParameterMapService)
+        self.amsafExecutor.targetGroundTruthImage = sub3_forearm_img_cropped
+        self.amsafExecutor.targetGroundTruthSeg = sub3_forearm_muscles_ground_truth
+        self.amsafExecutor.refGroundTruthImage = PQ_forearm_img_cropped
+        self.amsafExecutor.refGroundTruthSeg = PQ_forearm_muscles
+
+        self.amsafExecutor.execute()
+
+        topTwentyMaps = self.amsafExecutor.getTopNParameterMaps(20)
+        topTwentyMapsAndScores = self.amsafExecutor.getTopNParameterMapsAndSegScores(20)
+
+        resultsDir = '/home/ian/Programming/HART/AMSAF-results/'
+
+        self.amsafExecutor.writeTopNParameterMaps(1, resultsDir + 'parameter-maps/')
+
+        for i, seg in enumerate(self.amsafExecutor.getTopNSegmentations(20)):
+            sitk.WriteImage(seg, resultsDir + 'seg-images/seg_result.' + str(i) + '.nii')
+
+        self.assertTrue(len(topTwentyMaps) == 1)
+        self.assertTrue(len(topTwentyMapsAndScores) == 1)
 
     def testGetTopNResults(self):
         basicTest = AmsafExecutor(ParameterMapService)
