@@ -12,6 +12,7 @@ class AmsafExecutor(object):
         self._targetGroundTruthImage = None
         self._targetGroundTruthSeg = None
         self._parameterPriors = None
+        self._similarityMetric = self.diceScore
         self._segResultsCollection = []
         self._parameterMapService = parameterMapServiceInjectable()
 
@@ -58,6 +59,14 @@ class AmsafExecutor(object):
     @parameterPriors.setter
     def parameterPriors(self, value):
         self._parameterPriors = value
+
+    @property
+    def similarityMetric(self):
+        return self._similarityMetric
+
+    @similarityMetric.setter
+    def similarityMetric(self, value):
+        self._similarityMetric = value
 
     @property
     def segResultsCollection(self):
@@ -179,7 +188,7 @@ class AmsafExecutor(object):
 
             print("Evaluating segmentation accuracy for iteration + " + str(i) + "...")
             # Quantify segmentation accuracy
-            segScore = self.diceScore(resultSeg)
+            segScore = self.similarityMetric(resultSeg)
 
             # append registration parameters and corresponding score to a list
             self.segResultsCollection.append((pMapVec, segScore))

@@ -6,7 +6,7 @@ class AffineParameterMapGenerator(ParameterMapGenerator):
         super(AffineParameterMapGenerator, self).__init__()
         self.transformType = 'affine'
         self.paramDict = {
-            'MaximumNumberOfIterations': ['1024'],
+            'MaximumNumberOfIterations': ['512', '1024'],
             'Interpolator': ['BSplineInterpolator'],
             'NumberOfHistogramBins': ['32', '64']
         }
