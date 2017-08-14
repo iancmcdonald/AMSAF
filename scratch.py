@@ -21,12 +21,10 @@ if __name__ == '__main__':
     amsafExecutor.refGroundTruthSeg = PQ_forearm_muscles
     amsafExecutor.execute()
 
-    topTwenty = amsafExecutor.getTopNParameterMaps(20)
+    resultsDir = '/home/ian/Programming/HART/AMSAF-results/'
 
-    for i, (pMaps, segScore) in enumerate(topTwenty):
-        for transformMap, transformType in zip(pMaps, ['Rigid', 'Affine', 'Bspline']):
-            writeFileName = 'SegResult.' + transformType + '.' + str(i) + '.txt'
-            sitk.WriteParameterFile(transformMap, writeFileName)
-        f = open('ParamMapsIterScore.' + str(i) + '.txt', 'a')
-        f.write('score: ' + str(segScore) + '\n')
-        f.close()
+    amsafExecutor.writeTopNParameterMaps(20, resultsDir + 'parameter-maps/')
+
+    for i, seg in enumerate(amsafExecutor.getTopNSegmentations(10)):
+        sitk.WriteImage(seg, resultsDir + 'seg-images/seg_result.' + str(i) + '.nii')
+
