@@ -75,10 +75,21 @@ class TestAmsafExecutor(unittest.TestCase):
         self.assertTrue(1.0 - similarityScore < 0.1)
 
     def testSubtractionScore(self):
-        self.assertTrue(True)
+        self.amsafExecutor.similarityMetric = 'subtraction'
+        simScore = self.amsafExecutor.similarityMetric(sub3_forearm_muscles_ground_truth)
+
+        self.assertEqual(simScore, sub3_forearm_muscles_ground_truth.GetNumberOfPixels())
 
     def testDiceScore(self):
-        self.assertTrue(True)
+        self.amsafExecutor.similarityMetric = 'dice'
+        simScore = self.amsafExecutor.similarityMetric(sub3_forearm_muscles_ground_truth)
+
+        self.assertEqual(simScore, 1.0)
+
+    def testJaccardScore(self):
+        self.amsafExecutor.similarityMetric = 'jaccard'
+        simScore = self.amsafExecutor.similarityMetric(sub3_forearm_muscles_ground_truth)
+        self.assertEqual(simScore, 1.0)
 
     def testExecute(self):
         mockParameterMapService = MockClasses.MockParameterMapService
@@ -88,21 +99,15 @@ class TestAmsafExecutor(unittest.TestCase):
         self.amsafExecutor.targetGroundTruthSeg = sub3_forearm_muscles_ground_truth
         self.amsafExecutor.refGroundTruthImage = PQ_forearm_img_cropped
         self.amsafExecutor.refGroundTruthSeg = PQ_forearm_muscles
+        self.amsafExecutor.similarityMetric = 'volumeSimilarity'
 
         self.amsafExecutor.execute()
 
         topTwentyMaps = self.amsafExecutor.getTopNParameterMaps(20)
         topTwentyMapsAndScores = self.amsafExecutor.getTopNParameterMapsAndSegScores(20)
+        topTwentySegs = self.amsafExecutor.getTopNSegmentations(20)
 
-        resultsDir = '/home/ian/Programming/HART/AMSAF-results/'
-
-        self.amsafExecutor.writeTopNParameterMaps(1, resultsDir + 'parameter-maps/')
-
-        for i, seg in enumerate(self.amsafExecutor.getTopNSegmentations(20)):
-            sitk.WriteImage(seg, resultsDir + 'seg-images/seg_result.' + str(i) + '.nii')
-
-        self.assertTrue(len(topTwentyMaps) == 1)
-        self.assertTrue(len(topTwentyMapsAndScores) == 1)
+        self.assertTrue(len(topTwentyMaps) == len(topTwentyMapsAndScores) == len(topTwentySegs) == 1)
 
     def testGetTopNResults(self):
         self.assertTrue(True)

@@ -14,10 +14,12 @@ class ParameterMapService(object):
         self.bSplineParameterMapGenerator = bSplineParameterMapGeneratorInjectable()
 
     def addParameterPriors(self, parameterPriors):
-        for pMapGen, prior in zip(
-                [self.rigidParameterMapGenerator, self.affineParameterMapGenerator, self.bSplineParameterMapGenerator],
-                parameterPriors):
-            pMapGen.addParameterPriors(prior)
+        if parameterPriors['rigid']:
+            self.rigidParameterMapGenerator.addParameterPriors(parameterPriors['rigid'])
+        if parameterPriors['affine']:
+            self.affineParameterMapGenerator.addParameterPriors(parameterPriors['affine'])
+        if parameterPriors['bSpline']:
+            self.bSplineParameterMapGenerator.addParameterPriors(parameterPriors['bSpline'])
 
     def generateParameterMaps(self):
         # type: ([dict]) -> [sitk.ParameterMap, sitk.ParameterMap, sitk.ParameterMap]
