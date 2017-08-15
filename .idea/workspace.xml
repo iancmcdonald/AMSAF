@@ -2,16 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="51d50bd6-4361-448b-a46e-59856a33f23f" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/amsaf/AmsafImageFilter.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/amsaf/AffineParameterMapGenerator.py" afterPath="$PROJECT_DIR$/amsaf/AffineParameterMapGenerator.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/amsaf/AmsafExecutor.py" afterPath="$PROJECT_DIR$/amsaf/AmsafExecutor.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/amsaf/BSplineParameterMapGenerator.py" afterPath="$PROJECT_DIR$/amsaf/BSplineParameterMapGenerator.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/amsaf/ParameterMapService.py" afterPath="$PROJECT_DIR$/amsaf/ParameterMapService.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/amsaf/RigidParameterMapGenerator.py" afterPath="$PROJECT_DIR$/amsaf/RigidParameterMapGenerator.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/amsaf/tests/TestAmsafExecutor.py" afterPath="$PROJECT_DIR$/amsaf/tests/TestAmsafExecutor.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/amsaf/tests/TestAmsafExecutor.py.orig" afterPath="$PROJECT_DIR$/amsaf/tests/TestAmsafExecutor.py.orig" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/scratch.py" afterPath="$PROJECT_DIR$/scratch.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -22,17 +14,39 @@
   </component>
   <component name="CoverageDataManager">
     <SUITE FILE_PATH="coverage/AMSAF$Unittests_for_TestAmsafExecutor_MyTestCase_testSubtractionScore.coverage" NAME="Unittests for TestAmsafExecutor.MyTestCase.testSubtractionScore Coverage Results" MODIFIED="1502403420261" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/amsaf/tests" />
-    <SUITE FILE_PATH="coverage/AMSAF$Unittests_in_TestAmsafExecutor_py.coverage" NAME="Unittests in TestAmsafExecutor.py Coverage Results" MODIFIED="1502475516981" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/amsaf/tests" />
+    <SUITE FILE_PATH="coverage/AMSAF$Unittests_in_TestAmsafExecutor_py.coverage" NAME="Unittests in TestAmsafExecutor.py Coverage Results" MODIFIED="1502834899882" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/amsaf/tests" />
     <SUITE FILE_PATH="coverage/AMSAF$scratch.coverage" NAME="scratch Coverage Results" MODIFIED="1502135206380" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/AMSAF$Nosetests_in_test_amsaf_functional_py.coverage" NAME="Nosetests in test_amsaf_functional.py Coverage Results" MODIFIED="1502150880843" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/amsaf/tests" />
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="375">
-      <file leaf-file-name="AffineParameterMapGenerator.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/amsaf/AffineParameterMapGenerator.py">
+      <file leaf-file-name="AmsafImageFilter.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/amsaf/AmsafImageFilter.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="2814">
+              <caret line="134" column="37" lean-forward="true" selection-start-line="134" selection-start-column="37" selection-end-line="134" selection-end-column="37" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TestAmsafExecutor.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/amsaf/tests/TestAmsafExecutor.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="403">
+              <caret line="150" column="63" lean-forward="false" selection-start-line="150" selection-start-column="63" selection-end-line="150" selection-end-column="63" />
+              <folding>
+                <element signature="e#0#15#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="scratch.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/scratch.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="189">
-              <caret line="9" column="29" lean-forward="false" selection-start-line="9" selection-start-column="29" selection-end-line="9" selection-end-column="29" />
+              <caret line="22" column="0" lean-forward="false" selection-start-line="22" selection-start-column="0" selection-end-line="22" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -41,33 +55,11 @@
       <file leaf-file-name="AmsafExecutor.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/amsaf/AmsafExecutor.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1026">
-              <caret line="147" column="30" lean-forward="false" selection-start-line="147" selection-start-column="30" selection-end-line="147" selection-end-column="30" />
+            <state relative-caret-position="6238">
+              <caret line="303" column="37" lean-forward="true" selection-start-line="303" selection-start-column="37" selection-end-line="303" selection-end-column="37" />
               <folding>
                 <element signature="e#0#12#0" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="TestAmsafExecutor.py" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/amsaf/tests/TestAmsafExecutor.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="462">
-              <caret line="88" column="28" lean-forward="true" selection-start-line="88" selection-start-column="28" selection-end-line="88" selection-end-column="28" />
-              <folding>
-                <element signature="e#0#15#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="AffineMap2.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/amsaf/AffineMap2.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="378">
-              <caret line="18" column="50" lean-forward="false" selection-start-line="18" selection-start-column="50" selection-end-line="18" selection-end-column="50" />
-              <folding />
             </state>
           </provider>
         </entry>
@@ -121,11 +113,11 @@
         <option value="$PROJECT_DIR$/amsaf/BSplineParameterMapGenerator.py" />
         <option value="$PROJECT_DIR$/amsaf/tests/test_data/TestAmsafExecutorDummyFile1.py" />
         <option value="$PROJECT_DIR$/amsaf/ParameterMapService.py" />
-        <option value="$PROJECT_DIR$/amsaf/AmsafExecutor.py" />
         <option value="$PROJECT_DIR$/amsaf/tests/TestAmsafExecutorDummyFile1.py" />
         <option value="$PROJECT_DIR$/amsaf/RigidMap2.py" />
         <option value="$PROJECT_DIR$/amsaf/BSplineMap2.py" />
         <option value="$PROJECT_DIR$/amsaf/AffineMap2.py" />
+        <option value="$PROJECT_DIR$/amsaf/AmsafExecutor.py" />
         <option value="$PROJECT_DIR$/amsaf/tests/TestAmsafExecutor.py" />
       </list>
     </option>
@@ -170,12 +162,6 @@
               <item name="AMSAF" type="b2602c69:ProjectViewProjectNode" />
               <item name="AMSAF" type="462c0819:PsiDirectoryNode" />
               <item name="amsaf" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="AMSAF" type="b2602c69:ProjectViewProjectNode" />
-              <item name="AMSAF" type="462c0819:PsiDirectoryNode" />
-              <item name="amsaf" type="462c0819:PsiDirectoryNode" />
-              <item name="tests" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -376,34 +362,34 @@
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="Unittests_in_TestAmsafExecutor_py - 2017.08.11 at 11h 06m 53s.xml">
+    <history-entry file="Unittests_in_TestAmsafExecutor_py - 2017.08.15 at 14h 51m 48s.xml">
       <configuration name="Unittests in TestAmsafExecutor.py" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_in_TestAmsafExecutor_py - 2017.08.11 at 11h 07m 04s.xml">
+    <history-entry file="Unittests_in_TestAmsafExecutor_py - 2017.08.15 at 14h 52m 07s.xml">
       <configuration name="Unittests in TestAmsafExecutor.py" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_in_TestAmsafExecutor_py - 2017.08.11 at 11h 07m 06s.xml">
+    <history-entry file="Unittests_in_TestAmsafExecutor_py - 2017.08.15 at 14h 52m 58s.xml">
       <configuration name="Unittests in TestAmsafExecutor.py" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_in_TestAmsafExecutor_py - 2017.08.11 at 11h 07m 08s.xml">
+    <history-entry file="Unittests_in_TestAmsafExecutor_py - 2017.08.15 at 14h 53m 11s.xml">
       <configuration name="Unittests in TestAmsafExecutor.py" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_in_TestAmsafExecutor_py - 2017.08.11 at 11h 07m 10s.xml">
+    <history-entry file="Unittests_in_TestAmsafExecutor_py - 2017.08.15 at 14h 55m 35s.xml">
       <configuration name="Unittests in TestAmsafExecutor.py" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_in_TestAmsafExecutor_py - 2017.08.11 at 11h 07m 12s.xml">
+    <history-entry file="Unittests_in_TestAmsafExecutor_py - 2017.08.15 at 14h 55m 45s.xml">
       <configuration name="Unittests in TestAmsafExecutor.py" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_in_TestAmsafExecutor_py - 2017.08.11 at 11h 10m 15s.xml">
+    <history-entry file="Unittests_in_TestAmsafExecutor_py - 2017.08.15 at 14h 59m 16s.xml">
       <configuration name="Unittests in TestAmsafExecutor.py" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_in_TestAmsafExecutor_py - 2017.08.11 at 11h 10m 18s.xml">
+    <history-entry file="Unittests_in_TestAmsafExecutor_py - 2017.08.15 at 15h 07m 27s.xml">
       <configuration name="Unittests in TestAmsafExecutor.py" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_in_TestAmsafExecutor_py - 2017.08.11 at 11h 10m 36s.xml">
+    <history-entry file="Unittests_in_TestAmsafExecutor_py - 2017.08.15 at 15h 07m 39s.xml">
       <configuration name="Unittests in TestAmsafExecutor.py" configurationId="tests" />
     </history-entry>
-    <history-entry file="Unittests_in_TestAmsafExecutor_py - 2017.08.11 at 11h 18m 37s.xml">
+    <history-entry file="Unittests_in_TestAmsafExecutor_py - 2017.08.15 at 15h 08m 20s.xml">
       <configuration name="Unittests in TestAmsafExecutor.py" configurationId="tests" />
     </history-entry>
   </component>
@@ -413,10 +399,10 @@
     <layout>
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="File Transfer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3362256" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="File Transfer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3362256" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.329718" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3286334" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3286334" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32901832" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24114583" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -492,13 +478,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/scratch.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="22" column="0" lean-forward="false" selection-start-line="22" selection-start-column="0" selection-end-line="22" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/.PyCharm2017.2/system/remote_sources/799687061/-1227933812/SimpleITK/SimpleITK.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-987">
@@ -706,19 +685,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/scratch.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="441">
-          <caret line="22" column="0" lean-forward="false" selection-start-line="22" selection-start-column="0" selection-end-line="22" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/amsaf/ParameterMapService.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="504">
           <caret line="27" column="56" lean-forward="true" selection-start-line="27" selection-start-column="56" selection-end-line="27" selection-end-column="56" />
           <folding>
-            <element signature="e#0#24#0" expanded="true" />
+            <element signature="e#0#24#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -730,20 +702,13 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/amsaf/AmsafExecutor.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1026">
-          <caret line="147" column="30" lean-forward="false" selection-start-line="147" selection-start-column="30" selection-end-line="147" selection-end-column="30" />
-          <folding>
-            <element signature="e#0#12#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/amsaf/ParameterMapGenerator.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="105">
           <caret line="5" column="23" lean-forward="true" selection-start-line="5" selection-start-column="23" selection-end-line="5" selection-end-column="23" />
+          <folding>
+            <element signature="e#0#49#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -751,6 +716,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="63">
           <caret line="3" column="57" lean-forward="false" selection-start-line="3" selection-start-column="57" selection-end-line="3" selection-end-column="57" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -758,6 +724,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="357">
           <caret line="17" column="31" lean-forward="false" selection-start-line="17" selection-start-column="31" selection-end-line="17" selection-end-column="31" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -773,6 +740,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="189">
           <caret line="9" column="57" lean-forward="true" selection-start-line="9" selection-start-column="57" selection-end-line="9" selection-end-column="57" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -780,6 +748,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="420">
           <caret line="20" column="56" lean-forward="true" selection-start-line="20" selection-start-column="56" selection-end-line="20" selection-end-column="56" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -799,10 +768,36 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/scratch.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="189">
+          <caret line="22" column="0" lean-forward="false" selection-start-line="22" selection-start-column="0" selection-end-line="22" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/amsaf/AmsafImageFilter.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2814">
+          <caret line="134" column="37" lean-forward="true" selection-start-line="134" selection-start-column="37" selection-end-line="134" selection-end-column="37" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/amsaf/AmsafExecutor.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="6238">
+          <caret line="303" column="37" lean-forward="true" selection-start-line="303" selection-start-column="37" selection-end-line="303" selection-end-column="37" />
+          <folding>
+            <element signature="e#0#12#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/amsaf/tests/TestAmsafExecutor.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="462">
-          <caret line="88" column="28" lean-forward="true" selection-start-line="88" selection-start-column="28" selection-end-line="88" selection-end-column="28" />
+        <state relative-caret-position="403">
+          <caret line="150" column="63" lean-forward="false" selection-start-line="150" selection-start-column="63" selection-end-line="150" selection-end-column="63" />
           <folding>
             <element signature="e#0#15#0" expanded="true" />
           </folding>

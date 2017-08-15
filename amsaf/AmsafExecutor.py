@@ -186,7 +186,7 @@ class AmsafExecutor(object):
 
     def subtractionScore(self, seg):
         # type: (sitk.Image) -> float
-
+        self.copyMetaData(self.targetGroundTruthSeg, seg)
         subSeg = self.targetGroundTruthSeg - seg
         statsFilter = sitk.StatisticsImageFilter()
         statsFilter.Execute(subSeg == 0)  # read as: 1 if 0 else 0 for voxel in subSeg
@@ -296,3 +296,9 @@ class AmsafExecutor(object):
             resultSegmentations.append(self.findResultSeg(transformParameterMapVec))
 
         return resultSegmentations
+
+    def resampleImage(self, seg, newWidth, newHeight, newDepth):
+        # type: (sitk.Image, int, int, int) -> sitk.Image
+        resampler = sitk.ResampleImageFilter()
+        resampler.SetSize([newWidth, newHeight, newDepth])
+        return resampler.Execute(seg)

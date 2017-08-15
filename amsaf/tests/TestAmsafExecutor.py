@@ -1,6 +1,7 @@
 import unittest
 import SimpleITK as sitk
 from amsaf.AmsafExecutor import AmsafExecutor
+from amsaf.ParameterMapService import *
 import MockClasses
 
 PQ_forearm_img_cropped = sitk.ReadImage(
@@ -76,7 +77,7 @@ class TestAmsafExecutor(unittest.TestCase):
 
     def testSubtractionScore(self):
         # takes an image, and subtracts a blank image from it
-        amsafExecutor = AmsafExecutor()
+        amsafExecutor = AmsafExecutor(ParameterMapService)
         amsafExecutor.targetGroundTruthSeg = PQ_forearm_muscles
         blankImg = sitk.Image(371, 451, 123, 3)
         subtractScore = amsafExecutor.subtractionScore(blankImg)
@@ -102,7 +103,7 @@ class TestAmsafExecutor(unittest.TestCase):
         self.assertEqual(simScore, 1.0)
 
     def testExecute(self):
-        amsafExecutor = AmsafExecutor(TestParameterMapService)
+        amsafExecutor = AmsafExecutor()
         amsafExecutor.targetGroundTruthImage = sub3_forearm_img_cropped
         amsafExecutor.targetGroundTruthSeg = sub3_forearm_muscles_ground_truth
         amsafExecutor.refGroundTruthImage = PQ_forearm_img_cropped
@@ -128,12 +129,12 @@ class TestAmsafExecutor(unittest.TestCase):
         self.assertTrue(len(topTwentyMaps) == len(topTwentyMapsAndScores) == len(topTwentySegs) == 1)
 
     def testGetTopNResults(self):
-        basicTest = AmsafExecutor(ParameterMapService)
+        basicTest = AmsafExecutor()
         basicTest.segResultsCollection.append(("test1", 1.0))
         basicTest.segResultsCollection.append(("test1", 2.0))
         basicTest.segResultsCollection.append(("test1", 3.0))
         self.assertEqual(basicTest.getTopNParameterMaps(2), [('test1', 3.0), ('test1', 2.0)])
-        amsafExecutor = AmsafExecutor(ParameterMapService)
+        amsafExecutor = AmsafExecutor()
         amsafExecutor.segResultsCollection.append(("test1", 1.0))
         amsafExecutor.segResultsCollection.append(("test2", 1.0))
         amsafExecutor.segResultsCollection.append(("test3", 1.0))
@@ -143,6 +144,11 @@ class TestAmsafExecutor(unittest.TestCase):
         amsafExecutor.segResultsCollection.append(("test6", 1.0))
         print(amsafExecutor.getTopNParameterMaps(6))
 
+    def testResampler(self):
+        testDir = "/home/daniel/mridata/UnitTest/"
+        newTest = AmsafExecutor()
+        testImage = sitk.Image(10, 10, 10, 2)
+        resultImage = newTest.resampleImage(testImage, 1, 1, 1)
 
 if __name__ == '__main__':
     unittest.main()
