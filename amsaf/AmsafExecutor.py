@@ -11,7 +11,14 @@ class AmsafExecutor(object):
         self._refGroundTruthSeg = None
         self._targetGroundTruthImage = None
         self._targetGroundTruthSeg = None
-        self._parameterPriors = None
+        self._rigidParameterPriors = None
+        self._affineParameterPriors = None
+        self._bSplineParameterPriors = None
+        self._parameterPriors = {
+            'rigid': None,
+            'affine': None,
+            'bSpline': None
+        }
         self._similarityMetric = self.diceScore
         self._segResultsCollection = []
         self._parameterMapService = parameterMapServiceInjectable()
@@ -53,6 +60,33 @@ class AmsafExecutor(object):
         self._targetGroundTruthSeg = value
 
     @property
+    def rigidParameterPriors(self):
+        return self._rigidParameterPriors
+
+    @rigidParameterPriors.setter
+    def rigidParameterPriors(self, value):
+        self._rigidParameterPriors = value
+        self._parameterPriors['rigid'] = value
+
+    @property
+    def affineParameterPriors(self):
+        return self._affineParameterPriors
+
+    @affineParameterPriors.setter
+    def affineParameterPriors(self, value):
+        self._affineParameterPriors = value
+        self._parameterPriors['affine'] = value
+
+    @property
+    def bSplineParameterPriors(self):
+        return self._bSplineParameterPriors
+
+    @bSplineParameterPriors.setter
+    def bSplineParameterPriors(self, value):
+        self._bSplineParameterPriors = value
+        self._parameterPriors['bSpline'] = value
+
+    @property
     def parameterPriors(self):
         return self._parameterPriors
 
@@ -66,7 +100,18 @@ class AmsafExecutor(object):
 
     @similarityMetric.setter
     def similarityMetric(self, value):
-        self._similarityMetric = value
+        if value == 'subtraction':
+            self._similarityMetric = self.subtractionScore
+        elif value == 'dice':
+            self._similarityMetric = self.diceScore
+        elif value == 'jaccard':
+            self._similarityMetric = self.jaccardScore
+        elif value == 'volumeSimilarity':
+            self._similarityMetric = self.volumeSimilarityScore
+        elif value == 'kappa':
+            self._similarityMetric = self.kappaScore
+        else:
+            raise ValueError('INVALID SIMILARITY METRIC')
 
     @property
     def segResultsCollection(self):
@@ -149,18 +194,40 @@ class AmsafExecutor(object):
         # sum of ones
         return statsFilter.GetSum()
 
+    def _getOverLapFilter(self, seg):
+        # type: (sitk.Image) -> sitk.LabelOverlapMeasuresImageFilter
+        overlapFilter = sitk.LabelOverlapMeasuresImageFilter()
+        overlapFilter.Execute(self.targetGroundTruthSeg, seg)
+        return overlapFilter
+
     def diceScore(self, seg):
         # type: (sitk.Image) -> float
 
-        overlapFilter = sitk.LabelOverlapMeasuresImageFilter()
-        overlapFilter.Execute(self.targetGroundTruthSeg, seg)
-
+        overlapFilter = self._getOverLapFilter(seg)
         return overlapFilter.GetDiceCoefficient()
+
+    def jaccardScore(self, seg):
+        # type: (sitk.Image) -> float
+
+        overlapFilter = self._getOverLapFilter(seg)
+        return overlapFilter.GetJaccardCoefficient()
+
+    def volumeSimilarityScore(self, seg):
+        # type: (sitk.Image) -> float
+
+        overlapFilter = self._getOverLapFilter(seg)
+        return overlapFilter.GetVolumeSimilarity()
+
+    def kappaScore(self, seg):
+        # type: (sitk.Image) -> float
+        similarityFilter = sitk.SimilarityIndexImageFilter()
+        similarityFilter.Execute(self.targetGroundTruthSeg, seg)
+        return similarityFilter.GetSimilarityIndex()
 
     def execute(self):
         # type: () -> [(sitk.ParameterMap, float)]
 
-        if self.parameterPriors:
+        if self.rigidParameterPriors or self.affineParameterPriors or self.bSplineParameterPriors:
             self.parameterMapService.addParameterPriors(self.parameterPriors)
 
         i = 0
