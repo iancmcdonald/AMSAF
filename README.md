@@ -1,5 +1,8 @@
 # Automated MRI Segmentation and Analysis Framework \(AMSAF\)
 
+
+Further documentation contained here: 
+https://iancmcdonald.gitbooks.io/amsaf/content/
 ---
 
 ## Meta:
