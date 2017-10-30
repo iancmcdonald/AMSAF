@@ -35,10 +35,6 @@ https://iancmcdonald.gitbooks.io/amsaf/content/
 
 ## High-Level Components:
 
-### ![](./diagrams/amsaf_abstraction.jpg)
-
-###
-
 ### Segmenter
 
 * Purpose: Automatically Segment MRI images
