@@ -23,9 +23,9 @@ def main():
         amsafImageFilter.SetSimilarityMetric(metric)
         amsafImageFilter.Execute()
 
-        resultsDir = '/home/ian/Programming/HART/AMSAF-results/sim-metrics-data/' + metric + '/'
+        resultsDir = '/home/ian/Programming/HART/AMSAF-results/latest/sim-metrics-data/' + metric + '/'
 
-        amsafImageFilter.WriteTopNParameterMaps(20, resultsDir + 'parameter-maps/')
+        amsafImageFilter.WriteTopNParameterMaps(10, resultsDir + 'parameter-maps/')
 
         for i, seg in enumerate(amsafImageFilter.GetTopNSegmentations(10)):
             sitk.WriteImage(seg, resultsDir + 'seg-images/seg_result.' + str(i) + '.nii')

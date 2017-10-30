@@ -196,6 +196,7 @@ class AmsafExecutor(object):
 
     def _getOverLapFilter(self, seg):
         # type: (sitk.Image) -> sitk.LabelOverlapMeasuresImageFilter
+
         overlapFilter = sitk.LabelOverlapMeasuresImageFilter()
         overlapFilter.Execute(self.targetGroundTruthSeg, seg)
         return overlapFilter
@@ -220,6 +221,7 @@ class AmsafExecutor(object):
 
     def kappaScore(self, seg):
         # type: (sitk.Image) -> float
+
         similarityFilter = sitk.SimilarityIndexImageFilter()
         similarityFilter.Execute(self.targetGroundTruthSeg, seg)
         return similarityFilter.GetSimilarityIndex()
@@ -250,10 +252,12 @@ class AmsafExecutor(object):
             transformParameterMapVec = self.findTransformParameterMap(pMapVec)
 
             print("Segmenting moving image for iteration " + str(i) + "...")
+
             # Transform ref segmentation
             resultSeg = self.findResultSeg(transformParameterMapVec, copyMetaData=True)
 
             print("Evaluating segmentation accuracy for iteration + " + str(i) + "...")
+
             # Quantify segmentation accuracy
             segScore = self.similarityMetric(resultSeg)
 
@@ -277,14 +281,16 @@ class AmsafExecutor(object):
         return [result[0] for result in self.getTopNParameterMapsAndSegScores(n)]
 
     def writeTopNParameterMaps(self, n, dirPath):
-        # type: (int, str) -> None
         if dirPath[-1] != '/':
             dirPath += '/'
 
         for i, (pMapVec, segScore) in enumerate(self.getTopNParameterMapsAndSegScores(n)):
             for transformMap, transformType in zip(pMapVec, ['Rigid', 'Affine', 'Bspline']):
                 writeFileName = dirPath + 'SegResult.' + transformType + '.' + str(i) + '.txt'
-                sitk.WriteParameterFile(transformMap, writeFileName)
+                try:
+                    sitk.WriteParameterFile(transformMap, writeFileName)
+                except Exception:
+                    sitk.PrintParameterMap(transformMap)
             f = open(dirPath + 'ParamMapsIterScore.' + str(i) + '.txt', 'a')
             f.write('score: ' + str(segScore) + '\n')
             f.close()
