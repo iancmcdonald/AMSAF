@@ -153,14 +153,6 @@ class AmsafImageFilter(object):
         return self._amsafExecutor.getTopNParameterMapsAndSegScores(n)
 
     def GetTopNParameterMaps(self, n):
-        """
-
-        Args:
-            n:
-
-        Returns:
-
-        """
         return self._amsafExecutor.getTopNParameterMaps(n)
 
     def WriteTopNParameterMaps(self, n, dirPath):

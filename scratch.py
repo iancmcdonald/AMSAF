@@ -1,5 +1,5 @@
 import SimpleITK as sitk
-from amsaf.AmsafImageFilter import AmsafImageFilter
+from amsaf import AmsafImageFilter
 
 PQ_forearm_img_cropped = sitk.ReadImage(
     "/srv/hart_mri/mri_data/PQ_Full/crops/forearm/PQ_forearm_cropped_for_ITK-SNAP_biascorr.nii")
