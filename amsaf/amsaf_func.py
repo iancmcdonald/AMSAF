@@ -21,7 +21,11 @@ from sklearn.model_selection import ParameterGrid
 import cytoolz as ct
 
 
-def score_maps(unsegmented_image, segmented_image, unsegmented_image_gt, segmented_image_gt, parameter_priors=None):
+def amsaf_rank(unsegmented_image,
+               segmented_image,
+               unsegmented_image_gt,
+               segmented_image_gt,
+               parameter_priors=None):
     default_rigid = {
         "AutomaticParameterEstimation": ['true'],
         "AutomaticTransformInitialization": ['true'],
@@ -56,7 +60,8 @@ def score_maps(unsegmented_image, segmented_image, unsegmented_image_gt, segment
         "CheckNumberOfSamples": ['true'],
         "DefaultPixelValue": ['0.000000'],
         "FinalBSplineInterpolationOrder": ['3.000000'],
-        "FixedImagePyramid": ['FixedSmoothingImagePyramid', 'FixedRecursiveImagePyramid'],
+        "FixedImagePyramid":
+        ['FixedSmoothingImagePyramid', 'FixedRecursiveImagePyramid'],
         "ImageSampler": ['RandomCoordinate'],
         "Interpolator": ['BSplineInterpolator'],
         "MaximumNumberOfIterations": ['1024.000000'],
@@ -89,7 +94,8 @@ def score_maps(unsegmented_image, segmented_image, unsegmented_image_gt, segment
         'Interpolator': ['LinearInterpolator'],
         'MaximumNumberOfIterations': ['1024.000000'],
         'MaximumNumberOfSamplingAttempts': ['8.000000'],
-        'Metric': ['AdvancedMattesMutualInformation', 'TransformBendingEnergyPenalty'],
+        'Metric':
+        ['AdvancedMattesMutualInformation', 'TransformBendingEnergyPenalty'],
         'Metric0Weight': ['0', '0.5', '1.000000', '2.0'],
         'Metric1Weight': ['1.000000'],
         'MovingImagePyramid': ["MovingSmoothingImagePyramid"],
@@ -108,42 +114,50 @@ def score_maps(unsegmented_image, segmented_image, unsegmented_image_gt, segment
         'WriteResultImage': ['true']
     }
 
-    def param_combinations(param_options):
-        option_dict, transform_type = param_options
-        return (to_elastix(pm, transform_type) for pm in ParameterGrid(option_dict))
+    pm_gen = ct.mapcat(param_combinations,
+                       [(default_rigid, 'rigid'), (default_affine, 'affine'),
+                        (default_bspline, 'bspline')])
 
-    def to_elastix(pm, ttype):
-        pass
-   
-    # TODO: Stuff here
+    segf = ct.partial(segment, unsegmented_image, segmented_image,
+                      segmented_image_gt)
 
-    return ct.map(param_combinations,
-                  [(default_rigid, 'rigid'), (default_affine, 'affine'), (default_bspline, 'bspline')])
+    return ct.map(segf, pm_gen)
 
 
-def parameter_combinations(grid_dict):
-    return grid_dict[0], ParameterGrid()
+def param_combinations(param_options):
+    option_dict, transform_type = param_options
+    return (to_elastix(pm, transform_type)
+            for pm in ParameterGrid(option_dict))
 
 
-def score_map(unsegmented_image, segmented_image, unsegmented_image_gt, segmented_image_gt, parameter_maps=None):
-    seg = segment(unsegmented_image, segmented_image, segmented_image_gt, parameter_maps)
-    return similarity_score(seg, unsegmented_image_gt)
+def to_elastix(pm, ttype):
+    elastix_pm = sitk.GetDefaultParameterMap(ttype)
+    for k, v in pm.iteritems():
+        elastix_pm[k] = [v]
+    return elastix_pm
 
 
-def similarity_score(candidate, ground_truth):
-    pass
+def sim_score(candidate, ground_truth):
+    overlap_filter = sitk.LabelOverlapMeasuresImageFilter()
+    overlap_filter.Execute(ground_truth, candidate)
+    return overlap_filter.GetDiceCoefficient()
 
 
-def segment(unsegmented_image, segmented_image, segmentation, parameter_maps=None):
+def segment(unsegmented_image,
+            segmented_image,
+            segmentation,
+            parameter_maps=None):
     moving_image = sitk.ReadImage(segmented_image)
     fixed_image = sitk.ReadImage(unsegmented_image)
-    _, transform_parameter_maps = register(fixed_image, moving_image, parameter_maps)
+    _, transform_parameter_maps = register(fixed_image, moving_image,
+                                           parameter_maps)
 
     return transform(segmentation, nn_assoc(transform_parameter_maps))
 
 
 def nn_assoc(pms):
-    return pm_vec_assoc('ResampleInterpolator', 'FinalNearestNeighborInterpolator', pms)
+    return pm_vec_assoc('ResampleInterpolator',
+                        'FinalNearestNeighborInterpolator', pms)
 
 
 def auto_init_assoc(pms):
@@ -159,7 +173,11 @@ def pm_vec_assoc(k, v, pms):
     return list(ct.map(pm_assoc(k, v), pms))
 
 
-def register(fixed_image, moving_image, parameter_maps=None, auto_init=True, verbose=False):
+def register(fixed_image,
+             moving_image,
+             parameter_maps=None,
+             auto_init=True,
+             verbose=False):
     registration_filter = sitk.ElastixImageFilter()
     if not verbose:
         registration_filter.LogToConsoleOff()
