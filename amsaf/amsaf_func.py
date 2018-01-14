@@ -124,6 +124,10 @@ def amsaf_rank(unsegmented_image,
     return ct.map(segf, pm_gen)
 
 
+def format_result(parameter_map, ground_truth, candidate):
+    return [parameter_map, candidate, sim_score(candidate, ground_truth)]
+
+
 def param_combinations(param_options):
     option_dict, transform_type = param_options
     return (to_elastix(pm, transform_type)
