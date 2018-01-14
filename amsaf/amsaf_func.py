@@ -118,14 +118,13 @@ def amsaf_rank(unsegmented_image,
                        [(default_rigid, 'rigid'), (default_affine, 'affine'),
                         (default_bspline, 'bspline')])
 
-    segf = ct.partial(segment, unsegmented_image, segmented_image,
-                      segmented_image_gt)
+    def eval_pm(parameter_map):
+        seg = segment(unsegmented_image, segmented_image, segmented_image_gt,
+                      parameter_map)
+        score = sim_score(seg, unsegmented_image_gt)
+        return [parameter_map, seg, score]
 
-    return ct.map(segf, pm_gen)
-
-
-def format_result(parameter_map, ground_truth, candidate):
-    return [parameter_map, candidate, sim_score(candidate, ground_truth)]
+    return ct.map(eval_pm, pm_gen)
 
 
 def param_combinations(param_options):
@@ -170,7 +169,7 @@ def auto_init_assoc(pms):
 
 @ct.curry
 def pm_assoc(k, v, pm):
-    return ct.update_in(pm, [k], lambda _: [v])
+    return ct.assoc_in(pm, [k], [v])
 
 
 def pm_vec_assoc(k, v, pms):
