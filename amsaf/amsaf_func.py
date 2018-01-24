@@ -20,109 +20,114 @@ import SimpleITK as sitk
 from sklearn.model_selection import ParameterGrid
 import cytoolz as ct
 
+default_rigid = {
+    "AutomaticParameterEstimation": ['true'],
+    "AutomaticTransformInitialization": ['true'],
+    "BSplineInterpolationOrder": ['3.000000'],
+    "CheckNumberOfSamples": ['true'],
+    "DefaultPixelValue": ['0.000000'],
+    "FinalBSplineInterpolationOrder": ['3.000000'],
+    "FixedImagePyramid": ['FixedSmoothingImagePyramid'],
+    "ImageSampler": ['RandomCoordinate'],
+    "Interpolator": ['BSplineInterpolator'],
+    "MaximumNumberOfIterations": ['1024.000000'],
+    "MaximumNumberOfSamplingAttempts": ['8.000000'],
+    "Metric": ['AdvancedMattesMutualInformation'],
+    "MovingImagePyramid": ['MovingSmoothingImagePyramid'],
+    "NewSamplesEveryIteration": ['true'],
+    "NumberOfHistogramBins": ['64.000000'],
+    "NumberOfResolutions": ['3.000000'],
+    "NumberOfSamplesForExactGradient": ['4096.000000'],
+    "NumberOfSpatialSamples": ['2000.000000'],
+    "Optimizer": ['AdaptiveStochasticGradientDescent'],
+    "Registration": ['MultiResolutionRegistration'],
+    "ResampleInterpolator": ['FinalBSplineInterpolator'],
+    "Resampler": ['DefaultResampler'],
+    "ResultImageFormat": ['nii'],
+    "Transform": ['EulerTransform'],
+    "WriteIterationInfo": ['false'],
+    "WriteResultImage": ['true'],
+}
+
+default_affine = {
+    "AutomaticParameterEstimation": ['true'],
+    "CheckNumberOfSamples": ['true'],
+    "DefaultPixelValue": ['0.000000'],
+    "FinalBSplineInterpolationOrder": ['3.000000'],
+    "FixedImagePyramid":
+    ['FixedSmoothingImagePyramid', 'FixedRecursiveImagePyramid'],
+    "ImageSampler": ['RandomCoordinate'],
+    "Interpolator": ['BSplineInterpolator'],
+    "MaximumNumberOfIterations": ['1024.000000'],
+    "MaximumNumberOfSamplingAttempts": ['8.000000'],
+    "Metric": ['AdvancedMattesMutualInformation'],
+    "MovingImagePyramid": ['MovingSmoothingImagePyramid'],
+    "NewSamplesEveryIteration": ['true'],
+    "NumberOfHistogramBins": ['32.000000'],
+    "NumberOfResolutions": ['4.000000'],
+    "NumberOfSamplesForExactGradient": ['4096.000000'],
+    "NumberOfSpatialSamples": ['2048.000000'],
+    "Optimizer": ['AdaptiveStochasticGradientDescent'],
+    "Registration": ['MultiResolutionRegistration'],
+    "ResampleInterpolator": ['FinalBSplineInterpolator'],
+    "Resampler": ['DefaultResampler'],
+    "ResultImageFormat": ['nii'],
+    "Transform": ['AffineTransform'],
+    "WriteIterationInfo": ['false'],
+    "WriteResultImage": ['true'],
+}
+
+default_bspline = {
+    'AutomaticParameterEstimation': ["true"],
+    'CheckNumberOfSamples': ["true"],
+    'DefaultPixelValue': ['0.000000'],
+    'FinalBSplineInterpolationOrder': ['3.000000'],
+    'FinalGridSpacingInPhysicalUnits': ['4.000000', '6.000000'],
+    'FixedImagePyramid': ['FixedSmoothingImagePyramid'],
+    'ImageSampler': ['RandomCoordinate'],
+    'Interpolator': ['LinearInterpolator'],
+    'MaximumNumberOfIterations': ['1024.000000'],
+    'MaximumNumberOfSamplingAttempts': ['8.000000'],
+    'Metric':
+    ['AdvancedMattesMutualInformation', 'TransformBendingEnergyPenalty'],
+    'Metric0Weight': ['0', '0.5', '1.000000', '2.0'],
+    'Metric1Weight': ['1.000000'],
+    'MovingImagePyramid': ["MovingSmoothingImagePyramid"],
+    'NewSamplesEveryIteration': ['true'],
+    'NumberOfHistogramBins': ['32.000000'],
+    'NumberOfResolutions': ['4.000000'],
+    'NumberOfSamplesForExactGradient': ['4096.000000'],
+    'NumberOfSpatialSamples': ['2048.000000'],
+    'Optimizer': ['AdaptiveStochasticGradientDescent'],
+    'Registration': ['MultiMetricMultiResolutionRegistration'],
+    'ResampleInterpolator': ['FinalBSplineInterpolator'],
+    'Resampler': ['DefaultResampler'],
+    'ResultImageFormat': ['nii'],
+    'Transform': ['BSplineTransform'],
+    'WriteIterationInfo': ['false'],
+    'WriteResultImage': ['true']
+}
+
 
 def amsaf_rank(unsegmented_image,
                segmented_image,
                unsegmented_image_gt,
                segmented_image_gt,
-               parameter_priors=None):
-    default_rigid = {
-        "AutomaticParameterEstimation": ['true'],
-        "AutomaticTransformInitialization": ['true'],
-        "BSplineInterpolationOrder": ['3.000000'],
-        "CheckNumberOfSamples": ['true'],
-        "DefaultPixelValue": ['0.000000'],
-        "FinalBSplineInterpolationOrder": ['3.000000'],
-        "FixedImagePyramid": ['FixedSmoothingImagePyramid'],
-        "ImageSampler": ['RandomCoordinate'],
-        "Interpolator": ['BSplineInterpolator'],
-        "MaximumNumberOfIterations": ['1024.000000'],
-        "MaximumNumberOfSamplingAttempts": ['8.000000'],
-        "Metric": ['AdvancedMattesMutualInformation'],
-        "MovingImagePyramid": ['MovingSmoothingImagePyramid'],
-        "NewSamplesEveryIteration": ['true'],
-        "NumberOfHistogramBins": ['64.000000'],
-        "NumberOfResolutions": ['3.000000'],
-        "NumberOfSamplesForExactGradient": ['4096.000000'],
-        "NumberOfSpatialSamples": ['2000.000000'],
-        "Optimizer": ['AdaptiveStochasticGradientDescent'],
-        "Registration": ['MultiResolutionRegistration'],
-        "ResampleInterpolator": ['FinalBSplineInterpolator'],
-        "Resampler": ['DefaultResampler'],
-        "ResultImageFormat": ['nii'],
-        "Transform": ['EulerTransform'],
-        "WriteIterationInfo": ['false'],
-        "WriteResultImage": ['true'],
-    }
-
-    default_affine = {
-        "AutomaticParameterEstimation": ['true'],
-        "CheckNumberOfSamples": ['true'],
-        "DefaultPixelValue": ['0.000000'],
-        "FinalBSplineInterpolationOrder": ['3.000000'],
-        "FixedImagePyramid":
-        ['FixedSmoothingImagePyramid', 'FixedRecursiveImagePyramid'],
-        "ImageSampler": ['RandomCoordinate'],
-        "Interpolator": ['BSplineInterpolator'],
-        "MaximumNumberOfIterations": ['1024.000000'],
-        "MaximumNumberOfSamplingAttempts": ['8.000000'],
-        "Metric": ['AdvancedMattesMutualInformation'],
-        "MovingImagePyramid": ['MovingSmoothingImagePyramid'],
-        "NewSamplesEveryIteration": ['true'],
-        "NumberOfHistogramBins": ['32.000000'],
-        "NumberOfResolutions": ['4.000000'],
-        "NumberOfSamplesForExactGradient": ['4096.000000'],
-        "NumberOfSpatialSamples": ['2048.000000'],
-        "Optimizer": ['AdaptiveStochasticGradientDescent'],
-        "Registration": ['MultiResolutionRegistration'],
-        "ResampleInterpolator": ['FinalBSplineInterpolator'],
-        "Resampler": ['DefaultResampler'],
-        "ResultImageFormat": ['nii'],
-        "Transform": ['AffineTransform'],
-        "WriteIterationInfo": ['false'],
-        "WriteResultImage": ['true'],
-    }
-
-    default_bspline = {
-        'AutomaticParameterEstimation': ["true"],
-        'CheckNumberOfSamples': ["true"],
-        'DefaultPixelValue': ['0.000000'],
-        'FinalBSplineInterpolationOrder': ['3.000000'],
-        'FinalGridSpacingInPhysicalUnits': ['4.000000', '6.000000'],
-        'FixedImagePyramid': ['FixedSmoothingImagePyramid'],
-        'ImageSampler': ['RandomCoordinate'],
-        'Interpolator': ['LinearInterpolator'],
-        'MaximumNumberOfIterations': ['1024.000000'],
-        'MaximumNumberOfSamplingAttempts': ['8.000000'],
-        'Metric':
-        ['AdvancedMattesMutualInformation', 'TransformBendingEnergyPenalty'],
-        'Metric0Weight': ['0', '0.5', '1.000000', '2.0'],
-        'Metric1Weight': ['1.000000'],
-        'MovingImagePyramid': ["MovingSmoothingImagePyramid"],
-        'NewSamplesEveryIteration': ['true'],
-        'NumberOfHistogramBins': ['32.000000'],
-        'NumberOfResolutions': ['4.000000'],
-        'NumberOfSamplesForExactGradient': ['4096.000000'],
-        'NumberOfSpatialSamples': ['2048.000000'],
-        'Optimizer': ['AdaptiveStochasticGradientDescent'],
-        'Registration': ['MultiMetricMultiResolutionRegistration'],
-        'ResampleInterpolator': ['FinalBSplineInterpolator'],
-        'Resampler': ['DefaultResampler'],
-        'ResultImageFormat': ['nii'],
-        'Transform': ['BSplineTransform'],
-        'WriteIterationInfo': ['false'],
-        'WriteResultImage': ['true']
-    }
+               parameter_priors=None,
+               verbose=False):
+    def eval_pm(parameter_map):
+        seg = segment(
+            unsegmented_image,
+            segmented_image,
+            segmented_image_gt,
+            parameter_map,
+            verbose=verbose)
+        score = sim_score(seg, unsegmented_image_gt)
+        return [parameter_map, seg, score]
 
     pm_gen = ct.mapcat(param_combinations,
                        [(default_rigid, 'rigid'), (default_affine, 'affine'),
                         (default_bspline, 'bspline')])
-
-    def eval_pm(parameter_map):
-        seg = segment(unsegmented_image, segmented_image, segmented_image_gt,
-                      parameter_map)
-        score = sim_score(seg, unsegmented_image_gt)
-        return [parameter_map, seg, score]
 
     return ct.map(eval_pm, pm_gen)
 
@@ -137,25 +142,32 @@ def to_elastix(pm, ttype):
     elastix_pm = sitk.GetDefaultParameterMap(ttype)
     for k, v in pm.iteritems():
         elastix_pm[k] = [v]
-    return elastix_pm
 
 
 def sim_score(candidate, ground_truth):
+    candidate = sitk.Cast(candidate, ground_truth.GetPixelID())
+    candidate.CopyInformation(ground_truth)
+
     overlap_filter = sitk.LabelOverlapMeasuresImageFilter()
     overlap_filter.Execute(ground_truth, candidate)
     return overlap_filter.GetDiceCoefficient()
 
 
+def read_image(img):
+    return sitk.ReadImage(img)
+
+
 def segment(unsegmented_image,
             segmented_image,
             segmentation,
-            parameter_maps=None):
-    moving_image = sitk.ReadImage(segmented_image)
-    fixed_image = sitk.ReadImage(unsegmented_image)
-    _, transform_parameter_maps = register(fixed_image, moving_image,
-                                           parameter_maps)
+            parameter_maps=None,
+            verbose=False):
 
-    return transform(segmentation, nn_assoc(transform_parameter_maps))
+    _, transform_parameter_maps = register(
+        unsegmented_image, segmented_image, parameter_maps, verbose=verbose)
+
+    return transform(
+        segmentation, nn_assoc(transform_parameter_maps), verbose=verbose)
 
 
 def nn_assoc(pms):
@@ -187,12 +199,16 @@ def register(fixed_image,
     registration_filter.SetFixedImage(fixed_image)
     registration_filter.SetMovingImage(moving_image)
 
-    if parameter_maps:
-        if auto_init:
-            parameter_maps = auto_init_assoc(parameter_maps)
-        registration_filter.SetParameterMap(parameter_maps[0])
-        for m in parameter_maps[1:]:
-            registration_filter.AddParameterMap(m)
+    if not parameter_maps:
+        parameter_maps = [
+            sitk.GetDefaultParameterMap(t)
+            for t in ['translation', 'affine', 'bspline']
+        ]
+    if auto_init:
+        parameter_maps = auto_init_assoc(parameter_maps)
+    registration_filter.SetParameterMap(parameter_maps[0])
+    for m in parameter_maps[1:]:
+        registration_filter.AddParameterMap(m)
 
     registration_filter.Execute()
     result_image = registration_filter.GetResultImage()
