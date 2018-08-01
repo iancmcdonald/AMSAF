@@ -1,4 +1,6 @@
 import SimpleITK as sitk
+import sys
+sys.path.append("./amsaf")
 from amsaf import AmsafImageFilter
 
 PQ_forearm_img_cropped = sitk.ReadImage(
